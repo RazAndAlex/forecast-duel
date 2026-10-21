@@ -1,0 +1,63 @@
+name: nightly
+
+# Every night: fetch closes, score forecasts whose 5 days have passed,
+# make tonight's forecasts, commit the records, publish the page.
+on:
+  schedule:
+    - cron: "30 0 * * *"   # 00:30 UTC = after the Milan close and the Bitcoin UTC day
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ hashFiles('duel/models.py') }}
+          restore-keys: hf-
+
+      - name: Install
+        run: uv sync --frozen
+
+      - name: Run the duel
+        run: uv run python -m duel run
+
+      - name: Commit tonight's records
+        run: |
+          git config user.name "forecast-duel bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data site/data.json
+          git diff --cached --quiet || git commit -m "Nightly run $(date -u +%Y-%m-%d)"
+          git push
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: forecast
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,28 @@
+[project]
+name = "forecast-duel"
+version = "0.1.0"
+description = "Nightly 5-day close forecasts: Kronos-base vs Timestral-209M vs naive"
+requires-python = ">=3.12"
+dependencies = [
+    "timestral",
+    "yfinance>=0.2.54",
+    "einops>=0.8",
+    "tqdm>=4.67",
+    "torch>=2.4",
+]
+
+[tool.uv.sources]
+timestral = { git = "https://github.com/mistralai/timestral.git" }
+# CPU-only torch on Linux (GitHub Actions): skips ~3 GB of CUDA libraries.
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

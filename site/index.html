@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forecast Duel</title>
+<meta name="description" content="Kronos and Timestral forecast the same 10 prices every night. A naive 'tomorrow equals today' guess plays too. The real prices keep score.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="review" id="review" aria-label="Layout options">
+  <span>Layout</span>
+  <button data-v="board">A · Board</button>
+  <button data-v="stage">B · Stage</button>
+  <button data-v="ledger">C · Ledger</button>
+</nav>
+
+<header class="wrap top">
+  <h1>Forecast Duel</h1>
+  <p class="lede">Every night, two AI models forecast the next 5 closing prices of 10 assets. A third player always guesses the price stays where it is. When the real prices arrive, they keep score.</p>
+  <p class="stamp" id="stamp">Loading…</p>
+</header>
+
+<main class="wrap">
+  <section aria-labelledby="board-h" class="board-sec">
+    <div class="sec-head">
+      <h2 id="board-h">Scoreboard</h2>
+      <div class="seg" role="tablist" aria-label="Which forecasts to score">
+        <button role="tab" data-mode="live">Live</button>
+        <button role="tab" data-mode="warmup">Warm-up</button>
+      </div>
+    </div>
+    <p class="note" id="board-note"></p>
+    <div id="board" class="board"></div>
+  </section>
+
+  <section aria-labelledby="assets-h">
+    <div class="sec-head">
+      <h2 id="assets-h">Forecasts against what happened</h2>
+      <label class="toggle"><input type="checkbox" id="show-past" checked> Past forecasts</label>
+    </div>
+    <ul class="legend" aria-label="Legend">
+      <li><span class="key key-actual"></span>Real price</li>
+      <li><span class="key key-kronos"></span>Kronos</li>
+      <li><span class="key key-timestral"></span>Timestral <span class="band-key"></span><span class="dim">80% range</span></li>
+      <li><span class="key key-naive"></span>Naive guess</li>
+    </ul>
+    <div id="assets"></div>
+  </section>
+
+  <section aria-labelledby="how-h" class="how">
+    <h2 id="how-h">How the scoring works</h2>
+    <ol class="steps">
+      <li><b>Monday night.</b> Eni closed at €14.20. Kronos says Friday ends at €14.45, Timestral says €14.10, the naive guess says €14.20.</li>
+      <li><b>Each night after.</b> One more real close arrives. The forecast waits until all 5 are in.</li>
+      <li><b>Friday night.</b> Eni closes at €13.95. Each forecast gets two scores. <em>Average miss</em>: how far off it was across the 5 days. <em>Direction</em>: whether it called up or down right by day 5.</li>
+      <li><b>Beat the naive guess.</b> How often a model missed by less than "nothing changes" did, same night, same asset. Daily prices are close to random, so this is the bar that matters.</li>
+    </ol>
+    <h3>Live and warm-up</h3>
+    <p><b>Live</b> counts forecasts made from launch night on. Each one is committed to the public repository before the real price exists, so it cannot be edited afterwards. <b>Warm-up</b> replays the 20 trading days before launch so the page has something to show from day one. The models may have seen those days during training, so read it as a preview.</p>
+    <h3>The players</h3>
+    <dl class="players" id="players"></dl>
+    <p class="dim small">Prices: Yahoo Finance, adjusted daily closes. Runs every night at 00:30 UTC on GitHub Actions, on CPU. An experiment in measuring forecasts. Nothing here is investment advice.</p>
+  </section>
+</main>
+<footer class="wrap foot"><a href="https://github.com/RazAndAlex/forecast-duel">Source and every forecast ever made, on GitHub</a></footer>
+<div id="tip" class="tip" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
