@@ -96,6 +96,27 @@ svg text { font-family: 'Switzer', system-ui, sans-serif; font-size: 13px; fill:
 svg text.lab { font-size: 14px; font-weight: 500; }
 .wrap { overflow-x: auto; }
 @media (max-width: 760px) { body { padding: 0 16px 48px; } .status { flex-wrap: wrap; gap: 6px 20px; } .status .right { margin-left: 0; } .lead { font-size: 21px; } .board .big { font-size: 54px; } .board .big small { font-size: 24px; } .scale { width: 150px; } .board .who { width: auto; } .board .who .name { font-size: 24px; } }
+
+/* direction (round 4b) */
+.dirs h3 { font-size: 18px; font-weight: 500; margin: 0 0 2px; letter-spacing: -0.01em; }
+.dirs .note { margin-bottom: 8px; }
+.dt { border-collapse: collapse; width: auto; }
+.dt td { border-bottom: 1px solid var(--rule); padding: 7px 18px 7px 0; font-size: 15px; vertical-align: middle; white-space: nowrap; }
+.dt tr.g td { color: var(--ink-2); font-size: 14px; padding-top: 14px; border-bottom-color: var(--rule-strong); }
+.dt tr.dr { cursor: pointer; }
+.dt tr.dr.on { background: var(--open); }
+.dt td.nm b { font-weight: 600; }
+.dt td.nm > span { color: var(--ink-2); font-size: 14px; margin-left: 8px; }
+.dt td.pc { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.dt td.k { color: var(--ink-2); font-variant-numeric: tabular-nums; text-align: right; }
+.dt td.cn { font-variant-numeric: tabular-nums; }
+.dt tr.strong td.cn { font-weight: 700; }
+.dt td.go { color: var(--ink-2); font-size: 14px; text-align: right; }
+.dt tr.dx td { background: var(--open); white-space: normal; padding: 4px 12px 14px; font-size: 14px; color: var(--ink-2); }
+.dt tr.dx p { margin: 0 0 6px; max-width: 760px; }
+.mb { position: relative; display: inline-block; width: 120px; height: 3px; background: var(--rule); vertical-align: middle; }
+.mb i { position: absolute; top: 0; bottom: 0; left: 0; }
+.mb u { position: absolute; top: -5px; bottom: -5px; width: 1px; background: var(--ink); }
 :focus-visible { outline: 2px solid var(--ink-2); outline-offset: 2px; }
 </style>
 
@@ -117,6 +138,8 @@ svg text.lab { font-size: 14px; font-weight: 500; }
   <tbody id="assets"></tbody>
 </table></div>
 
+
+<section class="dirs" style="margin-top:48px"><h2 style="margin-top:0">NVDA, Up or Down tomorrow: the crowd, three traders and the models</h2><p class="note" id="dirnote"></p><div class="wrap" id="dira"></div></section>
 <script>
 const ORDER = ['naive', 'timestral', 'kronos'];
 const SHORT = { naive: 'Naive', timestral: 'Timestral', kronos: 'Kronos' };
@@ -134,7 +157,67 @@ fetch('data.json').then(r => r.json()).then(render).catch(e => {
   document.getElementById('status').textContent = 'Could not load data.json: ' + e.message;
 });
 
+
+const DLO = 40, DHI = 80, dxp = v => Math.max(0, Math.min(100, (v - DLO) / (DHI - DLO) * 100));
+const odds = p => p == null ? '–' : p >= 0.5 ? 'often' : `1 in ${Math.round(1 / p).toLocaleString('en-US')}`;
+const RNAME = id => id.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase());
+function players(d, withModels) {
+  const out = [{ key: 'crowd', name: 'The crowd', tag: 'Polymarket “NVDA Up” price at 09:30 New York', n: d.crowd.n, hits: d.crowd.hits, p: d.luck.crowd.p, col: 'var(--ink)',
+    more: `Above 50¢ counts as an Up call. The price already reflects NVDA's trading before the open, which the models never see.` }];
+  (d.traders.rules || []).forEach(r => {
+    const o = r.out_of_sample;
+    out.push({ key: r.id, name: RNAME(r.id), tag: `trader ${r.wallet.slice(0, 6)}`, n: r.n, hits: r.hits, p: r.p, col: 'var(--ink-2)',
+      more: `${esc(r.text)} ` + (o && o.n ? `On the ${o.n} earlier days the habit was not drawn from: ${o.hits} right (${(o.hits / o.n * 100).toFixed(1)}%).` : `Scored only on the days the habit was drawn from; the crowd price does not exist before them.`) });
+  });
+  if (withModels) {
+    const M = d.luck.models.warmup;
+    ORDER.slice().sort((a, b) => (M[a].p ?? 1) - (M[b].p ?? 1)).forEach(m => out.push({ key: m, model: true, name: `<span style="color:${COL(m)}">${SHORT[m]}</span>`, tag: '12 stocks, 5 days ahead', n: M[m].n, hits: M[m].hits, p: M[m].p, col: COL(m),
+      more: `Warm-up replay: every stock, each of the 5 days ahead, against the close before the forecast.` }));
+  }
+  return out;
+}
+function strip(d, W) {
+  const days = d.crowd.days || [], H = 70, pl = 44, pr = 8, pt = 6, pb = 18;
+  const sx = i => pl + i * (W - pl - pr) / Math.max(1, days.length - 1), sy = v => pt + (1 - v) * (H - pt - pb);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" style="display:block;margin:6px 0 2px"><line x1="${pl}" x2="${W - pr}" y1="${sy(.5)}" y2="${sy(.5)}" stroke="var(--rule-strong)"/><text x="${pl - 6}" y="${sy(1) + 4}" text-anchor="end">Up</text><text x="${pl - 6}" y="${sy(.5) + 4}" text-anchor="end">50¢</text><text x="${pl - 6}" y="${sy(0) + 2}" text-anchor="end">Down</text>`;
+  days.forEach((q, i) => { s += `<circle cx="${sx(i)}" cy="${sy(q.up_price)}" r="3" ${q.hit ? 'fill="var(--ink)"' : 'fill="none" stroke="var(--ink-2)" stroke-width="1.2"'}><title>${day(q.date)}: Up ${Math.round(q.up_price * 100)}¢, closed ${q.actual}</title></circle>`; });
+  if (days.length) s += `<text x="${pl}" y="${H - 2}">${day(days[0].date)}</text><text x="${W - pr}" y="${H - 2}" text-anchor="end">${day(days.at(-1).date)}</text>`;
+  return s + `</svg><p>One dot per day: height is the Up price; filled dots were right, empty ones wrong.</p>`;
+}
+function dirTable(d, withModels) {
+  const P = players(d, withModels);
+  let h = `<table class="dt"><tbody>`;
+  P.forEach((q, i) => {
+    if (i === 0) h += `<tr class="g"><td colspan="6">NVDA, next close against the one before</td></tr>`;
+    if (q.model && !P[i - 1].model) h += `<tr class="g"><td colspan="6">For scale: the models' own Up or Down calls</td></tr>`;
+    h += `<tr class="dr${q.p < 0.05 ? ' strong' : ''}" data-k="${q.key}" tabindex="0" role="button" aria-expanded="false"><td class="nm"><b>${q.name}</b><span>${q.tag}</span></td>` +
+      `<td class="pc">${(q.hits / q.n * 100).toFixed(1)}%</td><td class="k">${q.hits} of ${q.n}</td>` +
+      `<td><span class="mb"><i style="width:${dxp(q.hits / q.n * 100)}%;background:${q.col}"></i><u style="left:${dxp(50)}%"></u></span></td>` +
+      `<td class="cn">coin: ${odds(q.p)}</td><td class="go">▸</td></tr>`;
+  });
+  return h + `</tbody></table>`;
+}
+function wireDir(root, d, withModels) {
+  const P = Object.fromEntries(players(d, withModels).map(q => [q.key, q]));
+  const tog = tr => {
+    const was = tr.classList.contains('on');
+    root.querySelectorAll('tr.dx').forEach(x => x.remove());
+    root.querySelectorAll('tr.dr.on').forEach(x => { x.classList.remove('on'); x.setAttribute('aria-expanded', 'false'); x.lastElementChild.textContent = '▸'; });
+    if (was) return;
+    tr.classList.add('on'); tr.setAttribute('aria-expanded', 'true'); tr.lastElementChild.textContent = '▾';
+    const q = P[tr.dataset.k], r = document.createElement('tr'); r.className = 'dx';
+    r.innerHTML = `<td colspan="6"><p>${q.more}</p>${q.key === 'crowd' ? strip(d, Math.min(620, root.clientWidth - 24)) : ''}</td>`;
+    tr.after(r);
+  };
+  root.addEventListener('click', e => { const tr = e.target.closest('tr.dr'); if (tr) { e.stopPropagation(); tog(tr); } });
+  root.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr.dr')) { e.preventDefault(); e.stopPropagation(); tog(e.target); } });
+}
+const DNOTE = `Up or Down only, one day ahead. “Coin” says how often 50/50 guessing does this well by luck; below 1 in 20 is in bold. Click a row for how it is scored.`;
+
+function dirA(d){ if(!d.crowd) return; document.getElementById('dirnote').textContent = DNOTE; const r=document.getElementById('dira'); r.innerHTML = dirTable(d, true); wireDir(r, d, true); }
+
 function render(d) {
+  dirA(d);
   const W = d.leaderboard.warmup, L = d.leaderboard.live;
   // Per-asset misses come from assets[].scores.warmup (16 scored forecasts each); past[].actual is mostly null.
   const miss = (a, m) => a.scores.warmup[m].mape_pct;
