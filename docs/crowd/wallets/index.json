@@ -1,0 +1,73 @@
+{
+ "wallets_seen": 362,
+ "dropped": {
+  "few": 348,
+  "market_maker": 6
+ },
+ "kept": [
+  {
+   "wallet": "0xb6077a100f16016e2e88149f4567ad4360c260fb",
+   "trades": 197,
+   "slugs": 31,
+   "volume_shares": 16032,
+   "net_up_shares": 6026,
+   "share_days_net_long_up": 0.533
+  },
+  {
+   "wallet": "0x969fae0a3a93778adc42178f72c612ed8c4e4d55",
+   "trades": 153,
+   "slugs": 17,
+   "volume_shares": 6315,
+   "net_up_shares": -1100,
+   "share_days_net_long_up": 0.412
+  },
+  {
+   "wallet": "0x17559efac103ac7f361be37ec0b93888d4c55aac",
+   "trades": 140,
+   "slugs": 13,
+   "volume_shares": 8024,
+   "net_up_shares": 1137,
+   "share_days_net_long_up": 0.615
+  },
+  {
+   "wallet": "0xfde19f15eeda6ce108577ddc3c0838f60d76d732",
+   "trades": 119,
+   "slugs": 33,
+   "volume_shares": 1872,
+   "net_up_shares": 398,
+   "share_days_net_long_up": 0.606
+  },
+  {
+   "wallet": "0x38d812aff0b79f3bf5da2a477f780bcc163eea7c",
+   "trades": 118,
+   "slugs": 19,
+   "volume_shares": 12984,
+   "net_up_shares": -6071,
+   "share_days_net_long_up": 0.263
+  },
+  {
+   "wallet": "0x6b1f4538a11740201b8033d3eca751fa1a32bcaa",
+   "trades": 40,
+   "slugs": 12,
+   "volume_shares": 454,
+   "net_up_shares": -140,
+   "share_days_net_long_up": 0.273
+  },
+  {
+   "wallet": "0x9d8370d318450709ae9c7104a4a194d9a985a65f",
+   "trades": 39,
+   "slugs": 17,
+   "volume_shares": 917,
+   "net_up_shares": 430,
+   "share_days_net_long_up": 0.647
+  },
+  {
+   "wallet": "0x61234f998ff1a26aafe36125a4c204d30d9c8b33",
+   "trades": 39,
+   "slugs": 39,
+   "volume_shares": 745,
+   "net_up_shares": 745,
+   "share_days_net_long_up": 1.0
+  }
+ ]
+}

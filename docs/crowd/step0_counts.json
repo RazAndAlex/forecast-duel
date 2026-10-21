@@ -1,0 +1,636 @@
+{
+ "nvda": {
+  "markets_found": 41,
+  "markets_missing": 1,
+  "trades": 5669,
+  "volume_usd": 152489,
+  "wallets": 361,
+  "wallets_30plus": 22,
+  "top10": [
+   [
+    "0x95f51617e900f7d4df2894d77a73c1b2b269779f",
+    2237
+   ],
+   [
+    "0x982a77e75498fa134607f598c861b8de9d0c6851",
+    269
+   ],
+   [
+    "0xb6077a100f16016e2e88149f4567ad4360c260fb",
+    195
+   ],
+   [
+    "0x3de69fd6347a62a618656371e30a17b0c490e560",
+    176
+   ],
+   [
+    "0x611454f80556071e317be7e363b9b9248a890572",
+    154
+   ],
+   [
+    "0x969fae0a3a93778adc42178f72c612ed8c4e4d55",
+    153
+   ],
+   [
+    "0x17559efac103ac7f361be37ec0b93888d4c55aac",
+    140
+   ],
+   [
+    "0x7ddeb72e6b8726b146d085c20a90bb64158030b1",
+    131
+   ],
+   [
+    "0x933ca00f565ba7130180e58fce4f965cc33ba8c6",
+    122
+   ],
+   [
+    "0xfde19f15eeda6ce108577ddc3c0838f60d76d732",
+    119
+   ]
+  ],
+  "top10_days": [
+   5,
+   35,
+   30,
+   32,
+   36,
+   17,
+   13,
+   2,
+   26,
+   33
+  ],
+  "wallets_30plus_and_10days": 14,
+  "wallets_20days": 9,
+  "capped_markets": [],
+  "markets": [
+   {
+    "slug": "nvda-up-or-down-on-october-20-2026",
+    "volume": 882.8660910000001,
+    "trades": 41,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-19-2026",
+    "volume": 6985.140757,
+    "trades": 147,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-16-2026",
+    "volume": 2158.3927249999997,
+    "trades": 75,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-15-2026",
+    "volume": 2014.884299,
+    "trades": 82,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-14-2026",
+    "volume": 995.4061790000001,
+    "trades": 44,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-13-2026",
+    "volume": 4392.361092,
+    "trades": 113,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-12-2026",
+    "volume": 913.5232959999998,
+    "trades": 47,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-9-2026",
+    "volume": 2217.2080670000005,
+    "trades": 94,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-8-2026",
+    "volume": 2307.0490740000005,
+    "trades": 51,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-7-2026",
+    "volume": 1873.299427,
+    "trades": 59,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-6-2026",
+    "volume": 2209.566924,
+    "trades": 68,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-5-2026",
+    "volume": 773.6209069999999,
+    "trades": 36,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-2-2026",
+    "volume": 2437.201765,
+    "trades": 35,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-october-1-2026",
+    "volume": 2729.2707530000002,
+    "trades": 58,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-30-2026",
+    "volume": 1271.3300379999998,
+    "trades": 36,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-29-2026",
+    "volume": 3594.1614759999998,
+    "trades": 62,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-28-2026",
+    "volume": 2549.096095,
+    "trades": 64,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-25-2026",
+    "volume": 2325.999836,
+    "trades": 97,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-24-2026",
+    "volume": 1823.939904,
+    "trades": 36,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-23-2026",
+    "volume": 9552.65193,
+    "trades": 101,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-22-2026",
+    "volume": 2379.044553,
+    "trades": 57,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-21-2026",
+    "volume": 1359.682652,
+    "trades": 61,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-18-2026",
+    "volume": 4667.517013999999,
+    "trades": 72,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-17-2026",
+    "volume": 1262.978215,
+    "trades": 42,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-16-2026",
+    "volume": 6433.898015999999,
+    "trades": 119,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-15-2026",
+    "volume": 1622.7214299999998,
+    "trades": 54,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-14-2026",
+    "volume": 841.0646770000001,
+    "trades": 23,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-11-2026",
+    "volume": 7234.6652349999995,
+    "trades": 74,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-10-2026",
+    "volume": 516.213476,
+    "trades": 20,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-9-2026",
+    "volume": 3112.0132039999994,
+    "trades": 65,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-8-2026",
+    "volume": 4044.747796,
+    "trades": 84,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-7-2026",
+    "missing": true
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-4-2026",
+    "volume": 10301.348214000003,
+    "trades": 113,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-3-2026",
+    "volume": 1567.588502,
+    "trades": 33,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-2-2026",
+    "volume": 8553.342406999998,
+    "trades": 374,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-september-1-2026",
+    "volume": 10852.075161,
+    "trades": 809,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-31-2026",
+    "volume": 9922.102487999999,
+    "trades": 949,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-28-2026",
+    "volume": 4855.803390000001,
+    "trades": 646,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-27-2026",
+    "volume": 10964.220603999998,
+    "trades": 401,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-26-2026",
+    "volume": 3617.8755780000006,
+    "trades": 141,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-25-2026",
+    "volume": 2727.564344,
+    "trades": 98,
+    "capped": false
+   },
+   {
+    "slug": "nvda-up-or-down-on-august-24-2026",
+    "volume": 1645.7302280000001,
+    "trades": 88,
+    "capped": false
+   }
+  ]
+ },
+ "spx": {
+  "markets_found": 41,
+  "markets_missing": 1,
+  "trades": 31118,
+  "volume_usd": 2685433,
+  "wallets": 2535,
+  "wallets_30plus": 76,
+  "top10": [
+   [
+    "0x50c80ae7a66e49701dc9388bd13574ba03e0caa2",
+    2823
+   ],
+   [
+    "0xf9e1aa52914cbc4e88274a04adea7f53248f0458",
+    2346
+   ],
+   [
+    "0x99946c12a10148c361c60b3206b306409b5308b0",
+    1939
+   ],
+   [
+    "0x06ce4f6a73871f2026003b611ba4ca9ab8c70b8b",
+    1931
+   ],
+   [
+    "0x0e68e0ea896b3a73a35785f53fc3a95217c4826b",
+    1578
+   ],
+   [
+    "0x56b0233010d8f8a5b0c53d70b59b62647e7e18e6",
+    1205
+   ],
+   [
+    "0x06b2934b382d4429d50d7239ee375a76167f9f35",
+    914
+   ],
+   [
+    "0x208c5412e85e85f4103cd10a6394149bdda952ca",
+    887
+   ],
+   [
+    "0x959d5cd0fe570a53a9f7276d1e188ae3c3cfde65",
+    850
+   ],
+   [
+    "0x982a77e75498fa134607f598c861b8de9d0c6851",
+    724
+   ]
+  ],
+  "top10_days": [
+   26,
+   41,
+   37,
+   41,
+   35,
+   19,
+   32,
+   32,
+   10,
+   41
+  ],
+  "wallets_30plus_and_10days": 61,
+  "wallets_20days": 43,
+  "capped_markets": [],
+  "markets": [
+   {
+    "slug": "spx-up-or-down-on-october-20-2026",
+    "volume": 64129.27495899999,
+    "trades": 640,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-19-2026",
+    "volume": 164019.449316,
+    "trades": 790,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-16-2026",
+    "volume": 43470.214665999985,
+    "trades": 762,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-15-2026",
+    "volume": 37722.58194500001,
+    "trades": 821,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-14-2026",
+    "volume": 33505.91815899999,
+    "trades": 420,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-13-2026",
+    "volume": 68932.028859,
+    "trades": 778,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-12-2026",
+    "volume": 56604.16618600001,
+    "trades": 662,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-9-2026",
+    "volume": 34322.75415499997,
+    "trades": 465,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-8-2026",
+    "volume": 30101.67894699999,
+    "trades": 469,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-7-2026",
+    "volume": 37112.79331400002,
+    "trades": 656,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-6-2026",
+    "volume": 24964.350341999983,
+    "trades": 319,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-5-2026",
+    "volume": 27456.17982699999,
+    "trades": 507,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-2-2026",
+    "volume": 44243.516963000024,
+    "trades": 645,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-october-1-2026",
+    "volume": 43357.009758,
+    "trades": 973,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-30-2026",
+    "volume": 69096.92112400006,
+    "trades": 780,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-29-2026",
+    "volume": 65447.592767999995,
+    "trades": 687,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-28-2026",
+    "volume": 44522.27974600002,
+    "trades": 483,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-25-2026",
+    "volume": 76202.04719900002,
+    "trades": 844,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-24-2026",
+    "volume": 43832.951289000004,
+    "trades": 731,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-23-2026",
+    "volume": 28211.010914000006,
+    "trades": 415,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-22-2026",
+    "volume": 88211.238822,
+    "trades": 1091,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-21-2026",
+    "volume": 60239.60110500001,
+    "trades": 421,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-18-2026",
+    "volume": 94541.34537300005,
+    "trades": 1697,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-17-2026",
+    "volume": 50475.75430200002,
+    "trades": 480,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-16-2026",
+    "volume": 55830.92845800003,
+    "trades": 1034,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-15-2026",
+    "volume": 53343.37406500001,
+    "trades": 605,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-14-2026",
+    "volume": 60997.882991000006,
+    "trades": 746,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-11-2026",
+    "volume": 147780.17301999993,
+    "trades": 1032,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-10-2026",
+    "volume": 70805.193932,
+    "trades": 894,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-9-2026",
+    "volume": 101877.50353799998,
+    "trades": 1093,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-8-2026",
+    "volume": 59982.906409999974,
+    "trades": 914,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-7-2026",
+    "missing": true
+   },
+   {
+    "slug": "spx-up-or-down-on-september-4-2026",
+    "volume": 86865.977534,
+    "trades": 831,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-3-2026",
+    "volume": 62755.17742099999,
+    "trades": 750,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-2-2026",
+    "volume": 118612.244676,
+    "trades": 772,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-september-1-2026",
+    "volume": 75174.61603000002,
+    "trades": 568,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-31-2026",
+    "volume": 98536.822196,
+    "trades": 922,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-28-2026",
+    "volume": 80443.74785900004,
+    "trades": 1155,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-27-2026",
+    "volume": 32197.803497000004,
+    "trades": 391,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-26-2026",
+    "volume": 119975.598337,
+    "trades": 1315,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-25-2026",
+    "volume": 28396.799709,
+    "trades": 556,
+    "capped": false
+   },
+   {
+    "slug": "spx-up-or-down-on-august-24-2026",
+    "volume": 101133.24783399998,
+    "trades": 1004,
+    "capped": false
+   }
+  ]
+ }
+}

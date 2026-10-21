@@ -8,9 +8,9 @@ from pathlib import Path
 import pandas as pd
 
 from .assets import ASSETS, MODELS
-from . import fetch
+from . import crowd as crowd_mod, fetch, rules as rules_mod
 from .calendar import target_dates
-from .score import direction_hit, mape, next_bars
+from .score import direction_hit, luck_p, mape, next_bars
 from .store import load as load_forecasts
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -76,6 +76,23 @@ def _stat_block(metrics, with_beats: bool) -> dict:
             entry["beats_naive_pct"] = round(100 * sum(beats) / len(beats), 2) if beats else None
         block[model] = entry
     return block
+
+
+def _crowd_keys(totals) -> dict:
+    """New keys: the Polymarket crowd seat, the wallets behind it, and a luck test for every hit rate."""
+    nvda = fetch.load_cached("NVDA")["close"]
+    closes = {d.strftime("%Y-%m-%d"): float(c) for d, c in nvda.items()}
+    rows = crowd_mod.load()
+    crowd = crowd_mod.score(rows, closes)
+    rules = rules_mod.score_all(closes, rows)
+    wallets = ROOT / "docs" / "crowd" / "wallets" / "index.json"
+    traders = {"wallets": json.loads(wallets.read_text())["kept"] if wallets.exists() else [], "rules": rules}
+    luck = {"models": {split: {m: {"n": len(totals[split][m][1]), "hits": sum(totals[split][m][1]),
+                                   "p": luck_p(len(totals[split][m][1]), sum(totals[split][m][1]))}
+                               for m in MODELS} for split in totals},
+            "crowd": {"n": crowd["n"], "hits": crowd["hits"], "p": luck_p(crowd["n"], crowd["hits"])},
+            "rules": {r["id"]: {"n": r["n"], "hits": r["hits"], "p": r["p"]} for r in rules}}
+    return {"crowd": crowd, "traders": traders, "luck": luck}
 
 
 def build(prices: dict[str, pd.DataFrame] | None = None, out_path: Path = SITE) -> dict:
@@ -160,6 +177,7 @@ def build(prices: dict[str, pd.DataFrame] | None = None, out_path: Path = SITE) 
         },
         "assets": assets_out,
     }
+    data.update(_crowd_keys(totals))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(data, indent=1) + "\n")
     return data

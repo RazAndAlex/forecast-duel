@@ -9,7 +9,7 @@ import sys
 import time
 import traceback
 
-from . import fetch, report, store
+from . import crowd, fetch, report, store
 from .assets import ASSETS, MODELS, Asset
 from .calendar import target_dates
 from .models import KronosModel, TimestralModel
@@ -62,6 +62,10 @@ def run(backfill: int) -> None:
     model_phase("timestral", TimestralModel)
 
     added = store.append(new_rows)
+    try:
+        crowd.fetch_crowd()
+    except Exception:  # a Polymarket failure must never stop the nightly
+        traceback.print_exc()
     report.build(prices)
 
     wall = time.time() - t0

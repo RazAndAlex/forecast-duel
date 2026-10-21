@@ -1,0 +1,1 @@
+{"rules":[{"id":"placeholder","wallet":"0x0000000000000000000000000000000000000000","text":"Placeholder: buy Up after an up day, Down after a down day.","if":[{"feature":"prior_day_return","op":">","value":0}],"then":"up","else":"down"}]}

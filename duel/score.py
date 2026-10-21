@@ -1,6 +1,8 @@
 """Scoring rules for matured forecasts. Pure functions, no I/O."""
 from __future__ import annotations
 
+import math
+
 
 def sign_up(x: float) -> int:
     """Sign of a move, with 0 counted as up."""
@@ -25,3 +27,10 @@ def next_bars(bars: list[str], made_on: str, k: int = 5) -> list[str]:
 def matured(next_actual: list[float]) -> bool:
     """A forecast can be scored once 5 later bars exist."""
     return len(next_actual) >= 5
+
+
+def luck_p(n: int, hits: int) -> float | None:
+    """Chance of at least `hits` right calls out of n by fair coin flips (one-sided binomial)."""
+    if n == 0:
+        return None
+    return sum(math.comb(n, k) for k in range(hits, n + 1)) / 2**n
