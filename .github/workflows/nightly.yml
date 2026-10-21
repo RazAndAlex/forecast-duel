@@ -4,8 +4,12 @@ name: nightly
 # make tonight's forecasts, commit the records, publish the page.
 on:
   schedule:
-    - cron: "30 0 * * *"   # 00:30 UTC = after the Milan close and the Bitcoin UTC day
-  workflow_dispatch: {}
+    - cron: "30 0 * * *"   # 00:30 UTC = after the New York close
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Warm-up days to replay for new assets (0 = none)"
+        default: "0"
 
 permissions:
   contents: write
@@ -38,7 +42,7 @@ jobs:
         run: uv sync --frozen
 
       - name: Run the duel
-        run: uv run python -m duel run
+        run: uv run python -m duel run --backfill ${{ inputs.backfill || 0 }}
 
       - name: Commit tonight's records
         run: |

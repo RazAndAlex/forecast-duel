@@ -9,6 +9,7 @@ dependencies = [
     "einops>=0.8",
     "tqdm>=4.67",
     "torch>=2.4",
+    "exchange-calendars>=4.13.2",
 ]
 
 [tool.uv.sources]

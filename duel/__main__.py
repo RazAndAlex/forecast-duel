@@ -10,32 +10,33 @@ import time
 import traceback
 
 from . import fetch, report, store
-from .assets import ASSETS, MODELS
+from .assets import ASSETS, MODELS, Asset
 from .calendar import target_dates
 from .models import KronosModel, TimestralModel
 
 
 def run(backfill: int) -> None:
     t0 = time.time()
-    prices = {t: fetch.fetch(t, kind) for t, _name, kind in ASSETS}
+    prices = {a.ticker: fetch.fetch(a) for a in ASSETS}
 
     # (made_on, ticker, kind, live): the newest bar live, the N before it as warm-up.
-    jobs: list[tuple[str, str, str, bool]] = []
-    for ticker, _name, kind in ASSETS:
-        dates = [d.strftime("%Y-%m-%d") for d in prices[ticker].index]
-        jobs.append((dates[-1], ticker, kind, True))
+    jobs: list[tuple[str, Asset, bool]] = []
+    for asset in ASSETS:
+        dates = [d.strftime("%Y-%m-%d") for d in prices[asset.ticker].index]
+        jobs.append((dates[-1], asset, True))
         if backfill:
-            jobs += [(d, ticker, kind, False) for d in dates[-backfill - 1 : -1]]
+            jobs += [(d, asset, False) for d in dates[-backfill - 1 : -1]]
 
     existing = store.keys(store.load())
-    pending = {m: [j for j in jobs if (j[0], j[1], m) not in existing] for m in MODELS}
+    pending = {m: [j for j in jobs if (j[0], j[1].ticker, m) not in existing] for m in MODELS}
     new_rows: list[dict] = []
 
     # Naive first: no model in memory.
-    for made_on, ticker, _kind, live in pending["naive"]:
+    for made_on, asset, live in pending["naive"]:
+        ticker = asset.ticker
         last = float(prices[ticker].loc[:made_on]["close"].iloc[-1])
         new_rows.append(store.record(made_on, ticker, "naive", [last] * 5, None, None,
-                                     target_dates(made_on, _kind), live))
+                                     target_dates(made_on, asset), live))
 
     def model_phase(name, make_forecast):
         todo = pending[name]
@@ -43,11 +44,12 @@ def run(backfill: int) -> None:
             return
         model = make_forecast()
         try:
-            for i, (made_on, ticker, kind, live) in enumerate(todo, 1):
+            for i, (made_on, asset, live) in enumerate(todo, 1):
+                ticker = asset.ticker
                 try:
-                    values, q10, q90 = run_one(model, name, prices, made_on, ticker, kind)
+                    values, q10, q90 = run_one(model, name, prices, made_on, asset)
                     new_rows.append(store.record(made_on, ticker, name, values, q10, q90,
-                                                 target_dates(made_on, kind), live))
+                                                 target_dates(made_on, asset), live))
                 except Exception:
                     print(f"[{name}] {ticker} {made_on} failed:", file=sys.stderr)
                     traceback.print_exc()
@@ -76,8 +78,9 @@ def run(backfill: int) -> None:
     print(f"run done: {added} new forecasts, wall {wall:.0f}s, peak RSS {rss_mb:.0f} MB")
 
 
-def run_one(model, name, prices, made_on, ticker, kind):
-    dates = target_dates(made_on, kind)
+def run_one(model, name, prices, made_on, asset):
+    ticker = asset.ticker
+    dates = target_dates(made_on, asset)
     if name == "kronos":
         # 150 bars: longer windows make Kronos drift 10-30% on daily data (see docs/build-report.md).
         df = prices[ticker].loc[:made_on].tail(150)
@@ -89,11 +92,12 @@ def run_one(model, name, prices, made_on, ticker, kind):
 def smoke() -> None:
     """Load both models and forecast one asset. Writes nothing."""
     t0 = time.time()
-    ticker, _name, kind = ASSETS[0]
-    prices = {ticker: fetch.fetch(ticker, kind)}
+    asset = ASSETS[0]
+    ticker = asset.ticker
+    prices = {ticker: fetch.fetch(asset)}
     made_on = prices[ticker].index[-1].strftime("%Y-%m-%d")
     for name, cls in (("kronos", KronosModel), ("timestral", TimestralModel)):
-        pred = run_one(cls(), name, prices, made_on, ticker, kind)[0]
+        pred = run_one(cls(), name, prices, made_on, asset)[0]
         print(f"smoke {name} {ticker} from {made_on}: {[round(float(x), 3) for x in pred]}")
     rss_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024 if sys.platform == "darwin" else 1024)
     print(f"smoke ok: wall {time.time() - t0:.0f}s, peak RSS {rss_mb:.0f} MB")

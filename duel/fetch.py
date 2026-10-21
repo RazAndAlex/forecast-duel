@@ -8,41 +8,56 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import yfinance as yf
 
+from .assets import Asset
+
 ROOT = Path(__file__).resolve().parent.parent
 PRICES_DIR = ROOT / "data" / "prices"
 
 
-def is_complete(day: dt.date, kind: str, now: dt.datetime | None = None) -> bool:
-    """Stocks: complete before today (Rome), or today from 17:45 Rome. BTC: before today (UTC)."""
+# exchange -> (timezone, close, first hour of the last hourly candle). Yahoo's hourly index is
+# already in exchange-local time, and the last candle of a full session starts at that hour.
+EXCHANGES = {
+    "XNYS": ("America/New_York", dt.time(16, 0), 15),
+    "XETR": ("Europe/Berlin", dt.time(17, 30), 17),
+    "XMIL": ("Europe/Rome", dt.time(17, 30), 17),
+}
+SETTLE = dt.timedelta(minutes=15)
+
+
+def is_complete(day: dt.date, asset: Asset, now: dt.datetime | None = None) -> bool:
+    """Stocks: complete before today (exchange time), or today 15 min after the close. Crypto: before today (UTC)."""
     now = now or dt.datetime.now(dt.timezone.utc)
-    if kind == "crypto":
+    if asset.kind == "crypto":
         return day < now.astimezone(ZoneInfo("UTC")).date()
-    rome = now.astimezone(ZoneInfo("Europe/Rome"))
-    return day < rome.date() or (day == rome.date() and rome.time() >= dt.time(17, 45))
+    tz, close, _ = EXCHANGES[asset.exchange]
+    local = now.astimezone(ZoneInfo(tz))
+    cutoff = (dt.datetime.combine(day, close) + SETTLE).time()
+    return day < local.date() or (day == local.date() and local.time() >= cutoff)
 
 
-def _fill_from_hourly(ticker: str, df: pd.DataFrame) -> pd.DataFrame:
+def _fill_from_hourly(asset: Asset, df: pd.DataFrame) -> pd.DataFrame:
     """Yahoo's daily feed sometimes skips a session that its hourly feed has; rebuild it."""
-    h = yf.download(ticker, period="10d", interval="1h", auto_adjust=True, progress=False)
+    h = yf.download(asset.ticker, period="10d", interval="1h", auto_adjust=True, progress=False)
     if h is None or h.empty:
         return df
     if isinstance(h.columns, pd.MultiIndex):
         h.columns = h.columns.get_level_values(0)
     h = h.rename(columns=str.lower)
-    ts = pd.to_datetime(h.index).tz_localize(None)
+    ts = pd.to_datetime(h.index).tz_localize(None)  # drops the tz, keeps exchange wall time
     h.index = ts.normalize()
-    # Milan closes 17:30, so a complete day has an hourly candle starting at 17:00 or later.
-    closed = pd.Series(ts.hour, index=h.index).groupby(level=0).max() >= 17
+    # A complete day has an hourly candle starting at the exchange's last-candle hour or later.
+    closed = pd.Series(ts.hour, index=h.index).groupby(level=0).max() >= EXCHANGES[asset.exchange][2]
     agg = h.groupby(level=0).agg(open=("open", "first"), high=("high", "max"),
                                  low=("low", "min"), close=("close", "last"), volume=("volume", "sum"))
     missing = agg[~agg.index.isin(df.index) & (agg.index > df.index[-10])]
-    missing = missing[[is_complete(d.date(), "stock") and closed[d] for d in missing.index]]
+    missing = missing[[is_complete(d.date(), asset) and closed[d] for d in missing.index]]
     return pd.concat([df, missing]).sort_index() if len(missing) else df
 
 
-def fetch(ticker: str, kind: str) -> pd.DataFrame:
+def fetch(asset: Asset) -> pd.DataFrame:
     """~600 trading days of adjusted daily bars, today's incomplete bar dropped."""
     PRICES_DIR.mkdir(parents=True, exist_ok=True)
+    ticker = asset.ticker
     start = (dt.date.today() - dt.timedelta(days=920)).isoformat()
     df = yf.download(ticker, start=start, interval="1d", auto_adjust=True, progress=False)
     if df is None or df.empty:
@@ -54,9 +69,9 @@ def fetch(ticker: str, kind: str) -> pd.DataFrame:
         df["volume"] = 0.0
     df = df[["open", "high", "low", "close", "volume"]].dropna()
     df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
-    if kind != "crypto":
-        df = _fill_from_hourly(ticker, df)
-    df = df[[is_complete(d.date(), kind) for d in df.index]]
+    if asset.kind != "crypto":
+        df = _fill_from_hourly(asset, df)
+    df = df[[is_complete(d.date(), asset) for d in df.index]]
     df.to_csv(PRICES_DIR / f"{ticker}.csv")
     return df
 
