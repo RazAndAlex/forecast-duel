@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-21T09:01:24+00:00",
+ "generated_at": "2026-10-21T09:47:10+00:00",
  "models": [
   "kronos",
   "timestral",
@@ -9760,7 +9760,7 @@
    "kind": "stock",
    "exchange": "XETR",
    "currency": "EUR",
-   "last_close": 259.85,
+   "last_close": 260.25,
    "last_date": "2026-10-20",
    "history": [
     [
@@ -10121,7 +10121,7 @@
     ],
     [
      "2026-10-20",
-     259.85
+     260.25
     ]
    ],
    "latest": {
@@ -10317,7 +10317,7 @@
       270.65,
       270.65,
       266.2,
-      259.85
+      260.25
      ],
      "kronos": [
       272.67,
@@ -10971,7 +10971,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 41.09,
+   "last_close": 40.99,
    "last_date": "2026-10-20",
    "history": [
     [
@@ -11332,7 +11332,7 @@
     ],
     [
      "2026-10-20",
-     41.09
+     40.99
     ]
    ],
    "latest": {
@@ -11528,7 +11528,7 @@
       41.4,
       41.15,
       41.2,
-      41.09
+      40.99
      ],
      "kronos": [
       43.31,
@@ -12159,17 +12159,17 @@
     "warmup": {
      "kronos": {
       "n": 16,
-      "mape_pct": 6.73,
+      "mape_pct": 6.74,
       "direction_hit_pct": 50.0
      },
      "timestral": {
       "n": 16,
-      "mape_pct": 6.05,
+      "mape_pct": 6.06,
       "direction_hit_pct": 37.5
      },
      "naive": {
       "n": 16,
-      "mape_pct": 6.05,
+      "mape_pct": 6.06,
       "direction_hit_pct": 50.0
      }
     }
@@ -12182,7 +12182,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 3.836,
+   "last_close": 3.832,
    "last_date": "2026-10-20",
    "history": [
     [
@@ -12543,7 +12543,7 @@
     ],
     [
      "2026-10-20",
-     3.836
+     3.832
     ]
    ],
    "latest": {
@@ -12739,7 +12739,7 @@
       3.878,
       3.987,
       3.858,
-      3.836
+      3.832
      ],
      "kronos": [
       3.9,
@@ -13380,7 +13380,7 @@
      },
      "naive": {
       "n": 16,
-      "mape_pct": 2.9,
+      "mape_pct": 2.91,
       "direction_hit_pct": 25.0
      }
     }
@@ -13393,7 +13393,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 356.15,
+   "last_close": 356.35,
    "last_date": "2026-10-20",
    "history": [
     [
@@ -13754,7 +13754,7 @@
     ],
     [
      "2026-10-20",
-     356.15
+     356.35
     ]
    ],
    "latest": {
@@ -13950,7 +13950,7 @@
       352.8,
       356.35,
       353.35,
-      356.15
+      356.35
      ],
      "kronos": [
       352.73,
