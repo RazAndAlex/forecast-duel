@@ -96,14 +96,31 @@ def run_one(model, name, prices, made_on, ticker, kind):
     return model.forecast(closes)
 
 
+def smoke() -> None:
+    """Load both models and forecast one asset. Writes nothing."""
+    t0 = time.time()
+    ticker, _name, kind = ASSETS[0]
+    prices = {ticker: fetch.fetch(ticker, kind)}
+    made_on = prices[ticker].index[-1].strftime("%Y-%m-%d")
+    for name, cls in (("kronos", KronosModel), ("timestral", TimestralModel)):
+        pred = run_one(cls(), name, prices, made_on, ticker, kind)[0]
+        print(f"smoke {name} {ticker} from {made_on}: {[round(float(x), 3) for x in pred]}")
+    rss_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024 if sys.platform == "darwin" else 1024)
+    print(f"smoke ok: wall {time.time() - t0:.0f}s, peak RSS {rss_mb:.0f} MB")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="duel")
     sub = parser.add_subparsers(dest="cmd", required=True)
     p_run = sub.add_parser("run", help="fetch, forecast, score, write site/data.json")
     p_run.add_argument("--backfill", type=int, default=0,
                        help="also forecast the N bar dates before the latest one")
+    sub.add_parser("smoke", help="load both models, forecast one asset, write nothing")
     args = parser.parse_args()
-    run(args.backfill)
+    if args.cmd == "smoke":
+        smoke()
+    else:
+        run(args.backfill)
 
 
 if __name__ == "__main__":
