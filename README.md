@@ -1,6 +1,8 @@
 # Forecast Duel
 
-Each night, forecasts the next 5 daily closes of 10 assets with Kronos-base,
+**Live page: https://razandalex.github.io/forecast-duel/** (updated every night at 00:30 UTC)
+
+Each night, forecasts the next 5 daily closes of 12 assets with Kronos-base,
 Timestral-209M and a naive baseline, scores the matured forecasts, and writes
 `site/data.json` for a static page.
 
