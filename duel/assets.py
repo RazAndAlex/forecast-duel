@@ -1,4 +1,4 @@
-"""The 10 forecasted assets and the 3 competing models."""
+"""The 12 forecasted assets and the 3 competing models."""
 from typing import NamedTuple
 
 
@@ -22,6 +22,8 @@ ASSETS = [
     Asset("PLTR", "Palantir", "Palantir", "stock", "XNYS", "USD"),
     Asset("SIE.DE", "Siemens", "Siemens", "stock", "XETR", "EUR"),
     Asset("STMMI.MI", "STMicroelectronics", "STMicro", "stock", "XMIL", "EUR"),
+    Asset("STLAM.MI", "Stellantis", "Stellantis", "stock", "XMIL", "EUR"),
+    Asset("RACE.MI", "Ferrari", "Ferrari", "stock", "XMIL", "EUR"),
 ]
 
 # MILAN_V1: the first asset set. To switch back, replace ASSETS above with this list.
