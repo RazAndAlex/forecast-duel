@@ -9,6 +9,7 @@ import pandas as pd
 
 from .assets import ASSETS, MODELS
 from . import fetch
+from .calendar import target_dates
 from .score import direction_hit, mape, next_bars
 from .store import load as load_forecasts
 
@@ -27,14 +28,13 @@ def price(x: float) -> float:
     return round(float(x), 2) if abs(x) >= 10 else float(f"{x:.4g}")
 
 
-def _actual_after(dates: list[str], closes: list[float], made_on: str):
-    """The closes of the 5 bars after made_on, or None while immature."""
-    i = dates.index(made_on)
-    following = closes[i + 1 : i + 6]
-    return following if len(following) == 5 else None
+def _actual_after(close_of: dict[str, float], made_on: str, kind: str):
+    """The closes on the 5 calendar target dates after made_on, or None while any is missing."""
+    targets = target_dates(made_on, kind)
+    return [close_of[d] for d in targets] if all(d in close_of for d in targets) else None
 
 
-def _metrics(rows, ticker, dates, closes, close_of, live):
+def _metrics(rows, ticker, kind, close_of, live):
     """Per-model (mapes, directions, beats) for one asset and one live split."""
     out = {}
     for model in MODELS:
@@ -42,7 +42,7 @@ def _metrics(rows, ticker, dates, closes, close_of, live):
         for r in rows:
             if r["ticker"] != ticker or r["model"] != model or r["live"] != live:
                 continue
-            actual = _actual_after(dates, closes, r["made_on"])
+            actual = _actual_after(close_of, r["made_on"], kind)
             if actual is None:
                 continue
             lc = close_of[r["made_on"]]
@@ -91,7 +91,7 @@ def build(prices: dict[str, pd.DataFrame] | None = None, out_path: Path = SITE) 
         close_of = dict(zip(dates, closes))
         last_date = dates[-1]
 
-        asset_metrics = {split: _metrics(rows, ticker, dates, closes, close_of, live)
+        asset_metrics = {split: _metrics(rows, ticker, kind, close_of, live)
                          for split, live in (("live", True), ("warmup", False))}
         for split, met in asset_metrics.items():
             for m in MODELS:
@@ -123,8 +123,8 @@ def build(prices: dict[str, pd.DataFrame] | None = None, out_path: Path = SITE) 
                 "made_on": m_on,
                 "live": pn["live"],
                 "dates": pn["dates"],
-                "actual": [price(v) for v in _actual_after(dates, closes, m_on)]
-                          if _actual_after(dates, closes, m_on) else None,
+                "actual": [price(v) for v in _actual_after(close_of, m_on, kind)]
+                          if _actual_after(close_of, m_on, kind) else None,
                 "kronos": [price(v) for v in pk["values"]],
                 "timestral": [price(v) for v in pt["values"]],
                 "naive": [price(v) for v in pn["values"]],

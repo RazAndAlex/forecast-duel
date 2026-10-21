@@ -11,18 +11,8 @@ import traceback
 
 from . import fetch, report, store
 from .assets import ASSETS, MODELS
+from .calendar import target_dates
 from .models import KronosModel, TimestralModel
-
-
-def target_dates(made_on: str, kind: str) -> list[str]:
-    """Expected dates: next 5 weekdays for stocks, next 5 calendar days for BTC."""
-    d = dt.date.fromisoformat(made_on)
-    out = []
-    while len(out) < 5:
-        d += dt.timedelta(days=1)
-        if kind == "crypto" or d.weekday() < 5:
-            out.append(d.isoformat())
-    return out
 
 
 def run(backfill: int) -> None:

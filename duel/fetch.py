@@ -29,11 +29,14 @@ def _fill_from_hourly(ticker: str, df: pd.DataFrame) -> pd.DataFrame:
     if isinstance(h.columns, pd.MultiIndex):
         h.columns = h.columns.get_level_values(0)
     h = h.rename(columns=str.lower)
-    h.index = pd.to_datetime(h.index).tz_localize(None).normalize()
+    ts = pd.to_datetime(h.index).tz_localize(None)
+    h.index = ts.normalize()
+    # Milan closes 17:30, so a complete day has an hourly candle starting at 17:00 or later.
+    closed = pd.Series(ts.hour, index=h.index).groupby(level=0).max() >= 17
     agg = h.groupby(level=0).agg(open=("open", "first"), high=("high", "max"),
                                  low=("low", "min"), close=("close", "last"), volume=("volume", "sum"))
     missing = agg[~agg.index.isin(df.index) & (agg.index > df.index[-10])]
-    missing = missing[[is_complete(d.date(), "stock") for d in missing.index]]
+    missing = missing[[is_complete(d.date(), "stock") and closed[d] for d in missing.index]]
     return pd.concat([df, missing]).sort_index() if len(missing) else df
 
 
@@ -59,5 +62,6 @@ def fetch(ticker: str, kind: str) -> pd.DataFrame:
 
 
 def load_cached(ticker: str) -> pd.DataFrame:
-    df = pd.read_csv(PRICES_DIR / f"{ticker}.csv", index_col=0, parse_dates=True)
+    df = pd.read_csv(PRICES_DIR / f"{ticker}.csv", index_col=0, parse_dates=True,
+                     float_precision="round_trip")
     return df[["open", "high", "low", "close", "volume"]]
