@@ -4,70 +4,447 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forecast Duel</title>
-<meta name="description" content="Kronos and Timestral forecast the same 10 prices every night. A naive 'tomorrow equals today' guess plays too. The real prices keep score.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+<style>
+:root{
+  --bg:#1c1c1b; --line:#2c2c2a; --focus:#242423; --ink:#ece9e2; --ink2:#b9b5ab; --ink3:#8e8a82;
+  --kronos:#86a8cf; --timestral:#d99a6c; --naive:#a8a49b; --tag:#e3e0d8; --label:#d2cdc3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:Satoshi,system-ui,sans-serif;font-size:14px;line-height:1.35;font-variant-numeric:tabular-nums;overflow-x:hidden}
+.up{text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+.dim{color:var(--ink2)}
+button{font:inherit;color:inherit;background:none;border:0;text-align:left;cursor:pointer}
+
+/* Lebedev top bar */
+.bar{display:grid;grid-template-columns:2fr 1fr auto;gap:16px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.bar .motto{font-weight:700}
+.bar .clock{text-align:right;white-space:nowrap}
+
+/* miss ruler + how it's scored */
+.cards{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1.5fr);border-bottom:1px solid var(--line)}
+.card{padding:9px 12px 8px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-height:96px}
+.card:last-child{border-right:0}
+.card .foot{margin-top:auto;font-size:13px}
+.rhead{display:flex;flex-wrap:wrap;gap:2px 16px;font-size:14px}
+.rhead b{font-weight:500}
+#ruler{display:block;width:100%;margin-top:2px}
+.card.info{background:var(--focus);font-size:13px;gap:5px}
+.card.info b{font-weight:700}
+
+/* main: plot | index | focus */
+.main{display:grid;grid-template-columns:min(600px,max(420px,calc(100vh - 226px))) minmax(0,1fr) minmax(0,1fr)}
+.main>section{border-right:1px solid var(--line);min-width:0}
+.main>section:last-child{border-right:0}
+.head{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
+#plot{display:block;width:100%}
+.note{padding:4px 12px 10px;font-size:13px;color:var(--ink2)}
+
+.list{padding:6px 12px 10px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) 52px 84px;gap:8px;white-space:nowrap;width:100%;padding:4px 0;font-size:13px;align-items:center}
+.row.th{color:var(--label);padding-bottom:6px;cursor:default}
+.row .r{text-align:right}
+.row>span{overflow:hidden;text-overflow:ellipsis}
+.row .nm{padding:1px 6px;margin-left:-6px}
+.row.on .nm{background:var(--tag);color:#1c1c1b;font-weight:700}
+.row .yr{color:var(--ink2)}
+
+.focus{background:var(--focus)}
+.fstats{display:flex;gap:14px;padding:9px 12px 0;font-size:13px;flex-wrap:wrap}
+.fstats b{font-size:16px;font-weight:700;letter-spacing:0;text-transform:none}
+#chart{display:block;width:100%}
+svg text{font-family:Satoshi,system-ui,sans-serif}
+
+@media (max-width:1100px){
+  .main{grid-template-columns:1fr 1fr}
+  .main>section:first-child{grid-column:1/-1;border-right:0;border-bottom:1px solid var(--line)}
+}
+@media (max-width:720px){
+  .bar{grid-template-columns:1fr 1fr}
+  .bar>div:first-child{grid-column:1/-1}
+  .bar .clock{text-align:right}
+  .cards{grid-template-columns:1fr}
+  .card{min-height:0;padding:8px 12px;border-right:0}
+  .card.info{border-top:1px solid var(--line)}
+  .main{grid-template-columns:1fr}
+  .main>section{border-right:0;border-bottom:1px solid var(--line)}
+  .row{grid-template-columns:minmax(0,1.2fr) minmax(0,1.3fr) 50px 76px;gap:6px;white-space:normal}
+}
+</style>
 </head>
 <body>
-<nav class="review" id="review" aria-label="Layout options">
-  <span>Layout</span>
-  <button data-v="board">A · Board</button>
-  <button data-v="stage">B · Stage</button>
-  <button data-v="ledger">C · Ledger</button>
-</nav>
-
-<header class="wrap top">
-  <h1>Forecast Duel</h1>
-  <p class="lede">Every night, two AI models forecast the next 5 closing prices of 10 assets. A third player always guesses the price stays where it is. When the real prices arrive, they keep score.</p>
-  <p class="stamp" id="stamp">Loading…</p>
+<header class="bar up">
+  <div><span class="motto">Doing nothing is the bar.</span><br><span class="dim">Forecast Duel · two AI models vs doing nothing</span></div>
+  <div id="markets">Milan stock exchange &amp; Bitcoin<br><span class="dim">9 stocks · 1 coin · 5 days ahead</span></div>
+  <div class="clock" id="clock">Next run in --:--:--<br><span class="dim">00:30 UTC nightly</span></div>
 </header>
 
-<main class="wrap">
-  <section aria-labelledby="board-h" class="board-sec">
-    <div class="sec-head">
-      <h2 id="board-h">Scoreboard</h2>
-      <div class="seg" role="tablist" aria-label="Which forecasts to score">
-        <button role="tab" data-mode="live">Live</button>
-        <button role="tab" data-mode="warmup">Warm-up</button>
-      </div>
-    </div>
-    <p class="note" id="board-note"></p>
-    <div id="board" class="board"></div>
-  </section>
+<div class="cards" id="cards"></div>
 
-  <section aria-labelledby="assets-h">
-    <div class="sec-head">
-      <h2 id="assets-h">Forecasts against what happened</h2>
-      <label class="toggle"><input type="checkbox" id="show-past" checked> Past forecasts</label>
-    </div>
-    <ul class="legend" aria-label="Legend">
-      <li><span class="key key-actual"></span>Real price</li>
-      <li><span class="key key-kronos"></span>Kronos</li>
-      <li><span class="key key-timestral"></span>Timestral <span class="band-key"></span><span class="dim">80% range</span></li>
-      <li><span class="key key-naive"></span>Naive guess</li>
-    </ul>
-    <div id="assets"></div>
+<div class="main">
+  <section>
+    <div class="head up"><span>Who missed less, per asset</span><span class="dim" id="plotsub"></span></div>
+    <svg id="plot" role="img" aria-label="Scatter of Kronos miss against Timestral miss for each asset"></svg>
+    <p class="note" id="plotnote"></p>
   </section>
+  <section>
+    <div class="head up"><span id="ihead">Index · 10 assets</span><span class="dim">Click a row</span></div>
+    <div class="list" id="list"></div>
+  </section>
+  <section class="focus">
+    <div class="head up"><span id="ftitle"></span><span class="dim" id="fsub"></span></div>
+    <div class="fstats up" id="fstats"></div>
+    <svg id="chart" role="img" aria-label="Price history and 5-day forecasts for the selected asset"></svg>
+  </section>
+</div>
 
-  <section aria-labelledby="how-h" class="how">
-    <h2 id="how-h">How the scoring works</h2>
-    <ol class="steps">
-      <li><b>Monday night.</b> Eni closed at €14.20. Kronos says Friday ends at €14.45, Timestral says €14.10, the naive guess says €14.20.</li>
-      <li><b>Each night after.</b> One more real close arrives. The forecast waits until all 5 are in.</li>
-      <li><b>Friday night.</b> Eni closes at €13.95. Each forecast gets two scores. <em>Average miss</em>: how far off it was across the 5 days. <em>Direction</em>: whether it called up or down right by day 5.</li>
-      <li><b>Beat the naive guess.</b> How often a model missed by less than "nothing changes" did, same night, same asset. Daily prices are close to random, so this is the bar that matters.</li>
-    </ol>
-    <h3>Live and warm-up</h3>
-    <p><b>Live</b> counts forecasts made from launch night on. Each one is committed to the public repository before the real price exists, so it cannot be edited afterwards. <b>Warm-up</b> replays the 20 trading days before launch so the page has something to show from day one. The models may have seen those days during training, so read it as a preview.</p>
-    <h3>The players</h3>
-    <dl class="players" id="players"></dl>
-    <p class="dim small">Prices: Yahoo Finance, adjusted daily closes. Runs every night at 00:30 UTC on GitHub Actions, on CPU. An experiment in measuring forecasts. Nothing here is investment advice.</p>
-  </section>
-</main>
-<footer class="wrap foot"><a href="https://github.com/RazAndAlex/forecast-duel">Source and every forecast ever made, on GitHub</a></footer>
-<div id="tip" class="tip" hidden></div>
-<script src="app.js"></script>
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const NAMES = {kronos:'Kronos', timestral:'Timestral', naive:'Naive'};
+const COL = {kronos:'#86a8cf', timestral:'#d99a6c', naive:'#a8a49b'};
+const EXCH = {XNYS: 'New York', XETR: 'Frankfurt', XMIL: 'Milan', crypto: 'crypto'};
+const CUR = {USD: '$', EUR: '€'};
+const RULER_MAX = 4;
+let D, P, sel = 0;
+
+const dot = s => s.replaceAll('-', '.');
+const pct = v => v.toFixed(2) + '%';
+const money = a => (CUR[a.currency] || (a.ticker.endsWith('-USD') ? '$' : '€')) +
+  a.last_close.toLocaleString('en-US', {maximumFractionDigits: a.last_close > 1000 ? 0 : 3});
+const priceFmt = v => v >= 1000 ? Math.round(v).toLocaleString('en-US') : v.toFixed(v < 10 ? 3 : 2);
+function el(tag, attrs = {}, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const ctx = document.createElement('canvas').getContext('2d');
+function textW(s, size = 13, weight = 500, track = .04) {
+  ctx.font = `${weight} ${size}px Satoshi`;
+  return ctx.measureText(s).width + s.length * size * track;
+}
+// closest player(s) for one asset; ties listed together
+function closest(sc) {
+  const best = Math.min(...D.models.map(m => sc[m].mape_pct));
+  return {best, who: D.models.filter(m => sc[m].mape_pct === best)};
+}
+
+function countdown() {
+  const now = new Date(), t = new Date(now);
+  t.setUTCHours(0, 30, 0, 0);
+  if (t <= now) t.setUTCDate(t.getUTCDate() + 1);
+  const s = Math.floor((t - now) / 1000), z = n => String(n).padStart(2, '0');
+  document.getElementById('clock').firstChild.textContent =
+    `Next run in ${z(Math.floor(s / 3600))}:${z(Math.floor(s / 60) % 60)}:${z(s % 60)}`;
+}
+
+// header line from the assets: exchanges, then counts by kind
+function markets() {
+  const A = D.assets;
+  document.getElementById('ihead').textContent = `Index · ${A.length} assets`;
+  if (!A.some(a => a.exchange)) return; // older data: keep the static text
+  // shortcut: an asset without `exchange` is taken as Milan (or crypto), the old universe; drop once every asset carries it
+  const ex = [...new Set(A.map(a => EXCH[a.exchange] || a.exchange || (a.kind === 'crypto' ? 'crypto' : 'Milan')))];
+  const st = ex.filter(e => e !== 'crypto'), cr = ex.includes('crypto');
+  const and = l => l.length > 1 ? l.slice(0, -1).join(', ') + ' & ' + l.at(-1) : l[0] || '';
+  const top = st.length ? `${cr ? st.join(', ') : and(st)} stock exchange${st.length > 1 ? 's' : ''}${cr ? ' & crypto' : ''}` : 'Crypto';
+  const n = A.filter(a => a.kind === 'stock').length, c = A.length - n;
+  const sub = [n && `${n} stock${n > 1 ? 's' : ''}`, c && `${c} coin${c > 1 ? 's' : ''}`, '5 days ahead'].filter(Boolean).join(' · ');
+  document.getElementById('markets').innerHTML = `${top}<br><span class="dim">${sub}</span>`;
+}
+
+function cards() {
+  const lb = D.leaderboard, live = lb.live.kronos.n > 0;
+  const L = lb[P], order = [...D.models].sort((a, b) => L[a].mape_pct - L[b].mape_pct);
+  const gap = m => (L[m].mape_pct - L[order[0]].mape_pct).toFixed(2);
+  const lead = gap(order[1]) === '0.00' ? `${NAMES[order[0]]} and ${NAMES[order[1]]} are level.` : `${NAMES[order[0]]} leads.`;
+  // concrete example: first asset, most recent past forecast that has real closes
+  const a = D.assets[0], ex = a.past.find(p => p.actual);
+  const miss = Math.abs(ex.kronos[0] - ex.actual[0]) / ex.actual[0] * 100;
+  const gen = D.generated_at;
+  let h = `<div class="card">
+      <div class="rhead"><span>Average miss against the real close. Left is closer.</span>
+        <b>${lead} ${NAMES[order[1]]} is ${gap(order[1])} points behind, ${NAMES[order[2]]} ${gap(order[2])}.</b></div>
+      <svg id="ruler" role="img" aria-label="Average miss of each player on a 0 to 4% scale"></svg>
+    </div>`;
+  h += `<div class="card info">
+    <div class="up"><b>How it's scored.</b> <span class="dim">Average miss = how far a forecast lands from the real close, in %. Lower wins.</span></div>
+    <div>E.g. on ${dot(ex.made_on)} Kronos said ${a.name} would close at ${ex.kronos[0]} on ${dot(ex.dates[0])}; it closed at ${ex.actual[0]}, a miss of ${miss.toFixed(2)}%.</div>
+    <div class="up">${live ? 'Live scores' : '<b>Live: no scores yet (n=0).</b> <span class="dim">Fills in from next week. Showing warm-up: 20 replayed days.</span>'}</div>
+    <div class="foot up dim">Last updated ${dot(gen.slice(0, 10))} · ${gen.slice(11, 16)} UTC</div>
+  </div>`;
+  document.getElementById('cards').innerHTML = h;
+}
+
+/* ---------- miss ruler: one scale, three marks, labels stacked in tiers when they would touch ---------- */
+function ruler() {
+  const svg = document.getElementById('ruler'), L = D.leaderboard[P];
+  svg.innerHTML = '';
+  const W = svg.clientWidth, pl = 14, pr = 14, X = v => pl + Math.min(v, RULER_MAX) / RULER_MAX * (W - pl - pr);
+  const items = D.models.map(m => {
+    const v = L[m].mape_pct, off = v > RULER_MAX;
+    const s = `${NAMES[m]} ${pct(v)}${off ? ' →' : ''}`;
+    return {m, x: X(v), s, w: textW(s, 15, 500, 0), off};
+  });
+  // try every (tier, side) combination; cheapest layout where no label or leader touches another label wins
+  const opts = []; for (let t = 0; t < 3; t++) for (const r of [0, 1]) opts.push({t, r});
+  let best = null;
+  const rec = (i, chosen, cost) => {
+    if (best && cost >= best.cost) return;
+    if (i === items.length) { best = {cost, chosen: chosen.slice()}; return; }
+    const it = items[i];
+    for (const o of opts) {
+      if (it.off && !o.r) continue;
+      const x0 = o.r ? it.x - 6 - it.w : it.x + 6, x1 = x0 + it.w;
+      if (x0 < 0 || x1 > W) continue;
+      let ok = true;
+      for (let j = 0; j < i && ok; j++) {
+        const c = chosen[j];
+        if (c.t === o.t && x0 < c.x1 + 12 && c.x0 < x1 + 12) ok = false;
+        if (o.t > c.t && it.x > c.x0 - 4 && it.x < c.x1 + 4) ok = false;
+        if (c.t > o.t && items[j].x > x0 - 4 && items[j].x < x1 + 4) ok = false;
+      }
+      if (!ok) continue;
+      chosen.push({t: o.t, r: o.r, x0, x1});
+      rec(i + 1, chosen, cost + o.t * 10 + o.r);
+      chosen.pop();
+    }
+  };
+  rec(0, [], 0);
+  const rowH = 22, tiers = Math.max(...best.chosen.map(c => c.t)) + 1, base = tiers * rowH + 10, H = base + 28;
+  svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  el('line', {x1: X(0), x2: X(RULER_MAX), y1: base, y2: base, stroke: '#ece9e2'}, svg);
+  for (let v = 0; v <= RULER_MAX; v++) {
+    el('line', {x1: X(v), x2: X(v), y1: base, y2: base + 7, stroke: '#ece9e2'}, svg);
+    el('text', {x: X(v), y: base + 23, 'text-anchor': v ? v === RULER_MAX ? 'end' : 'middle' : 'start', fill: '#d2cdc3', 'font-size': 14}, svg, v + '%');
+  }
+  items.forEach((it, i) => {
+    const c = best.chosen[i], yb = base - 10 - c.t * rowH;
+    el('line', {x1: it.x, x2: it.x, y1: base, y2: yb - 13, stroke: COL[it.m], 'stroke-width': 1.5}, svg);
+    el('circle', {cx: it.x, cy: base, r: 6, fill: COL[it.m], stroke: '#1c1c1b', 'stroke-width': 2}, svg);
+    el('text', {x: c.r ? c.x1 : c.x0, y: yb, 'text-anchor': c.r ? 'end' : 'start', fill: '#ece9e2', 'font-size': 15, 'font-weight': 500}, svg, it.s);
+  });
+}
+
+function list() {
+  let h = `<div class="row th up"><span>Asset</span><span>Closest</span><span class="r">Miss</span><span class="r">Last close</span></div>`;
+  D.assets.forEach((a, i) => {
+    const c = closest(a.scores[P]);
+    const who = c.who.map(m => `<span style="color:${COL[m]}">${NAMES[m]}</span>`).join(' = ');
+    h += `<button class="row up${i === sel ? ' on' : ''}" data-i="${i}">
+      <span><span class="nm">${a.name}</span></span><span>${who}</span>
+      <span class="r">${pct(c.best)}</span><span class="r yr">${money(a)}</span></button>`;
+  });
+  const L = document.getElementById('list');
+  L.innerHTML = h;
+  L.querySelectorAll('button').forEach(b => b.onclick = () => pick(+b.dataset.i));
+}
+
+function pick(i) { sel = i; list(); plot(); focus(); }
+
+/* ---------- the duel plot ---------- */
+function plot() {
+  const svg = document.getElementById('plot');
+  const W = svg.clientWidth, H = W;
+  svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = '';
+  const m = {l: 46, r: 14, t: 14, b: 40}, S = W - m.l - m.r;
+  // linear, both axes from 0 to the same rounded-up max
+  const all = D.assets.flatMap(a => [a.scores[P].kronos.mape_pct, a.scores[P].timestral.mape_pct]);
+  const step = niceStep(Math.max(...all) / 5), hi = Math.ceil(Math.max(...all) / step) * step, k = S / hi;
+  const sx = v => m.l + v * k, sy = v => m.t + S - v * k;
+  const x0 = m.l, x1 = m.l + S, y0 = m.t, y1 = m.t + S;
+
+  for (let v = 0; v <= hi + 1e-9; v += step) {
+    el('line', {x1: sx(v), x2: sx(v), y1: y0, y2: y1, stroke: '#2c2c2a'}, svg);
+    el('line', {x1: x0, x2: x1, y1: sy(v), y2: sy(v), stroke: '#2c2c2a'}, svg);
+    el('text', {x: sx(v), y: y1 + 17, 'text-anchor': 'middle', fill: '#b9b5ab', 'font-size': 13}, svg, +v.toFixed(2) + '%');
+    el('text', {x: x0 - 6, y: sy(v) + 4, 'text-anchor': 'end', fill: '#b9b5ab', 'font-size': 13}, svg, +v.toFixed(2) + '%');
+  }
+  el('rect', {x: x0, y: y0, width: S, height: S, fill: 'none', stroke: '#3a3a37'}, svg);
+  el('line', {x1: x0, y1: y1, x2: x1, y2: y0, stroke: '#8e8a82', 'stroke-dasharray': '4 4'}, svg);
+  const up = (s, x, y, a, c, extra = {}) =>
+    el('text', {x, y, 'text-anchor': a, fill: c, 'font-size': 13, 'font-weight': 700, 'letter-spacing': '.04em', ...extra}, svg, s.toUpperCase());
+  el('text', {x: x0 + S / 2, y: y1 + 35, 'text-anchor': 'middle', fill: COL.kronos, 'font-size': 13, 'font-weight': 500, 'letter-spacing': '.04em'}, svg, 'KRONOS AVERAGE MISS →');
+  el('text', {x: 13, y: y0 + S / 2, 'text-anchor': 'middle', fill: COL.timestral, 'font-size': 13, 'font-weight': 500, 'letter-spacing': '.04em', transform: `rotate(-90 13 ${y0 + S / 2})`}, svg, 'TIMESTRAL AVERAGE MISS →');
+  up('Kronos closer', x0 + 10, y0 + 22, 'start', COL.kronos);
+  up('Timestral closer', x1 - 10, y1 - 12, 'end', COL.timestral);
+  // "same miss" written along the diagonal, in its upper-right stretch where the dots are fewest
+  const tieAt = hi * .82, tx = sx(tieAt), ty = sy(tieAt);
+  up('Same miss', tx - 6, ty - 6, 'end', '#b9b5ab', {transform: `rotate(-45 ${tx} ${ty})`, 'font-weight': 500});
+
+  const pts = D.assets.map((a, i) => {
+    const s = a.scores[P];
+    return {i, a, k: s.kronos.mape_pct, t: s.timestral.mape_pct,
+      x: sx(s.kronos.mape_pct), y: sy(s.timestral.mape_pct), label: (a.short || a.name).toUpperCase()};
+  });
+
+  // obstacles: fixed labels, the diagonal and its label, every dot
+  const fixed = [
+    {x: x0 + 8, y: y0 + 8, w: textW('KRONOS CLOSER', 13, 700) + 4, h: 18},
+    {x: x1 - 12 - textW('TIMESTRAL CLOSER', 13, 700), y: y1 - 26, w: textW('TIMESTRAL CLOSER', 13, 700) + 4, h: 18},
+  ];
+  for (let d = 0; d < 100; d += 12) fixed.push({x: tx - 8 - d * .72 - 10, y: ty - 8 - d * .72 + 8 - 18, w: 18, h: 18});
+  for (const p of pts) fixed.push({x: p.x - 5, y: p.y - 5, w: 10, h: 10});
+  const placed = place(pts, fixed, {x0, y0, x1, y1});
+
+  for (const p of pts) {
+    const L = placed[p.i], on = p.i === sel;
+    const g = el('g', {style: 'cursor:pointer'}, svg);
+    if (L.lead) el('line', {x1: p.x, y1: p.y, x2: L.ax, y2: L.ay, stroke: '#8e8a82'}, g);
+    if (on) el('rect', {x: L.x - 3, y: L.y, width: L.w + 4, height: L.h, fill: '#e3e0d8'}, g);
+    el('circle', {'data-k': p.k, 'data-t': p.t, cx: p.x, cy: p.y, r: on ? 7 : 5, fill: '#ece9e2'}, g);
+    el('text', {x: L.x, y: L.y + 14, fill: on ? '#1c1c1b' : '#ece9e2', 'font-size': 13, 'font-weight': on ? 700 : 500, 'letter-spacing': '.04em'}, g, p.label);
+    el('rect', {x: Math.min(L.x, p.x - 8), y: Math.min(L.y, p.y - 8), width: Math.max(L.x + L.w, p.x + 8) - Math.min(L.x, p.x - 8), height: Math.max(L.y + L.h, p.y + 8) - Math.min(L.y, p.y - 8), fill: 'transparent'}, g);
+    g.onclick = () => pick(p.i);
+  }
+  document.getElementById('plotsub').textContent = P === 'warmup' ? 'Warm-up' : 'Live';
+  document.getElementById('plotnote').textContent =
+    'Dot = one asset, placed at its average miss for each model. On the dashed line both missed by the same amount.';
+}
+
+function segDist(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(px - ax - t * dx, py - ay - t * dy);
+}
+function cross(ax, ay, bx, by, cx, cy, dx, dy) {
+  const s = (px, py, qx, qy, rx, ry) => Math.sign((qx - px) * (ry - py) - (qy - py) * (rx - px));
+  return s(ax, ay, bx, by, cx, cy) * s(ax, ay, bx, by, dx, dy) < 0 && s(cx, cy, dx, dy, ax, ay) * s(cx, cy, dx, dy, bx, by) < 0;
+}
+// does the segment pass through the box (sampled; boxes are 18px tall, leaders short)
+function segBox(ax, ay, bx, by, b) {
+  for (let t = .1; t < .95; t += .1) {
+    const x = ax + (bx - ax) * t, y = ay + (by - ay) * t;
+    if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return true;
+  }
+  return false;
+}
+// label de-collision: greedy over candidate spots, most crowded point first, leader line when pushed out
+function place(pts, fixed, box) {
+  const H = 18, out = {}, taken = [...fixed];
+  const ov = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+                        Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  const crowd = p => pts.filter(q => Math.hypot(q.x - p.x, q.y - p.y) < 60).length;
+  const order = [...pts].sort((a, b) => crowd(b) - crowd(a));
+  const dirs = [[1, 0], [-1, 0], [1, -1], [1, 1], [-1, -1], [-1, 1], [0, -1], [0, 1]];
+  for (const p of order) {
+    const w = textW(p.label) + 2, own = taken.filter(r => !(r.x === p.x - 5 && r.y === p.y - 5));
+    let best = null;
+    for (const r of [9, 24, 42, 64, 90]) for (const [dx, dy] of dirs) {
+      const ax = p.x + dx * r * (dy ? .75 : 1), ay = p.y + dy * r * (dx ? .75 : 1);
+      const x = dx > 0 ? ax : dx < 0 ? ax - w : ax - w / 2;
+      const y = dy > 0 ? ay : dy < 0 ? ay - H : ay - H / 2;
+      const c = {x, y, w, h: H};
+      let cost = r * 2 + (dx < 0 ? 3 : 0);
+      for (const o of own) cost += ov(c, o) * 40; // overlapping text is the worst outcome, above touching a dot
+      // a label or leader that touches another asset's dot reads as that asset's label
+      const ex = dx > 0 ? x : dx < 0 ? x + w : x + w / 2, ey = dy > 0 ? y : dy < 0 ? y + H : y + H / 2;
+      for (const q of pts) if (q !== p) {
+        const bx = Math.max(x, Math.min(q.x, x + w)) - q.x, by = Math.max(y, Math.min(q.y, y + H)) - q.y;
+        if (Math.hypot(bx, by) < 10) cost += 3000;
+        if (r > 9 && segDist(q.x, q.y, p.x, p.y, ex, ey) < 9) cost += 3000;
+      }
+      // leaders must not cross each other, or run through a placed label
+      if (r > 9) for (const o of Object.values(out)) {
+        if (o.lead && cross(p.x, p.y, ex, ey, o.px, o.py, o.ax, o.ay)) cost += 3000;
+        if (segBox(p.x, p.y, ex, ey, o)) cost += 3000;
+      }
+      for (const o of Object.values(out)) if (o.lead && segBox(o.px, o.py, o.ax, o.ay, c)) cost += 3000;
+      if (x < box.x0 + 2 || x + w > box.x1 - 2 || y < box.y0 + 2 || y + H > box.y1 - 2) cost += 1e5;
+      if (!best || cost < best.cost) best = {...c, cost, px: p.x, py: p.y, ax: dx > 0 ? x : dx < 0 ? x + w : x + w / 2, ay: dy > 0 ? y : dy < 0 ? y + H : y + H / 2, lead: r > 9};
+    }
+    out[p.i] = best;
+    taken.push(best);
+  }
+  return out;
+}
+
+/* ---------- focus: one asset's chart ---------- */
+function focus() {
+  const a = D.assets[sel], f = a.latest, sc = a.scores[P];
+  document.getElementById('ftitle').textContent = `${a.name} · ${a.kind}`;
+  document.getElementById('fsub').textContent = `Forecast made ${dot(f.made_on)}`;
+  document.getElementById('fstats').innerHTML = D.models.map(m =>
+    `<span><span style="color:${COL[m]}">${NAMES[m]}</span> miss <b>${pct(sc[m].mape_pct)}</b></span>`).join('');
+
+  const svg = document.getElementById('chart');
+  const W = svg.clientWidth, H = Math.max(300, Math.min(470, window.innerHeight - svg.getBoundingClientRect().top - 8 + window.scrollY));
+  svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = '';
+  const hist = a.history.slice(-20), nH = hist.length, N = nH + 5;
+  const m = {l: 12, r: 130, t: 18, b: 34}, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const vals = [...hist.map(d => d[1]), ...f.kronos, ...f.timestral, ...f.timestral_q10, ...f.timestral_q90];
+  let lo = Math.min(...vals), hi = Math.max(...vals), pad = (hi - lo) * .08; lo -= pad; hi += pad;
+  const sx = i => m.l + i / (N - 1) * iw, sy = v => m.t + (hi - v) / (hi - lo) * ih;
+
+  // forecast zone
+  el('rect', {x: sx(nH - 1), y: m.t, width: sx(N - 1) - sx(nH - 1), height: ih, fill: '#2a2a28'}, svg);
+  // y ticks
+  const step = niceStep((hi - lo) / 5);
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+    el('line', {x1: m.l, x2: m.l + 6, y1: sy(v), y2: sy(v), stroke: '#57554f'}, svg);
+    el('text', {x: m.l + 10, y: sy(v) + 4, fill: '#d2cdc3', 'font-size': 13}, svg, priceFmt(v));
+  }
+  // x labels: first day, last close, last forecast day
+  const lab = (i, s, anchor) => el('text', {x: sx(i), y: H - 12, 'text-anchor': anchor, fill: '#b9b5ab', 'font-size': 13}, svg, s);
+  lab(0, dot(hist[0][0]).slice(5), 'start');
+  lab(nH - 1, dot(hist[nH - 1][0]).slice(5), 'end');
+  lab(N - 1, dot(f.dates[4]).slice(5), 'end');
+  el('line', {x1: sx(nH - 1), x2: sx(nH - 1), y1: m.t, y2: m.t + ih, stroke: '#57554f', 'stroke-dasharray': '3 3'}, svg);
+  el('text', {x: sx(nH - 1) + 6, y: m.t + 12, fill: '#b9b5ab', 'font-size': 13, 'letter-spacing': '.04em'}, svg, 'NEXT 5 DAYS →');
+
+  const xs = [nH - 1, ...f.dates.map((_, j) => nH + j)];
+  const path = arr => arr.map((v, j) => `${j ? 'L' : 'M'}${sx(xs[j]).toFixed(1)} ${sy(v).toFixed(1)}`).join('');
+  const last = a.last_close;
+  // Timestral q10-q90 band
+  const up = [last, ...f.timestral_q90], dn = [last, ...f.timestral_q10];
+  el('path', {d: path(up) + dn.map((v, j) => `L${sx(xs[j])} ${sy(v)}`).reverse().join('') + 'Z', fill: COL.timestral, 'fill-opacity': .14}, svg);
+  // real price
+  el('path', {d: hist.map((d, i) => `${i ? 'L' : 'M'}${sx(i).toFixed(1)} ${sy(d[1]).toFixed(1)}`).join(''), fill: 'none', stroke: '#ece9e2', 'stroke-width': 2}, svg);
+  for (const mdl of ['naive', 'timestral', 'kronos'])
+    el('path', {d: path([last, ...f[mdl]]), fill: 'none', stroke: COL[mdl], 'stroke-width': mdl === 'naive' ? 1.5 : 2.2, 'stroke-dasharray': mdl === 'naive' ? '5 4' : null}, svg);
+  el('circle', {cx: sx(nH - 1), cy: sy(last), r: 4, fill: '#ece9e2'}, svg);
+
+  // real price label at the last close
+  // put it at the first height where the price line leaves room, with a leader when moved
+  const rx = sx(nH - 1) - 8, ry = sy(last), rw = textW(priceFmt(last) + '  real close ' + dot(a.last_date), 13, 500, 0) + 8;
+  const clear = y => hist.every((d, i) => sx(i) < rx - rw || Math.abs(sy(d[1]) - (y - 5)) > 12);
+  const ly = [ry - 14, ry + 24, ry - 34, ry + 44, ry - 56, ry + 66].find(y => y > m.t + 12 && y < m.t + ih && clear(y)) ?? ry - 14;
+  if (Math.abs(ly - ry) > 20) el('line', {x1: sx(nH - 1), y1: ry, x2: rx + 4, y2: ly - 5, stroke: '#8e8a82'}, svg);
+  const rl = el('text', {x: rx, y: ly, 'text-anchor': 'end', fill: '#ece9e2', 'font-size': 14, 'font-weight': 700}, svg, priceFmt(last));
+  el('tspan', {fill: '#d2cdc3', 'font-weight': 500, 'font-size': 13}, rl, '  real close ' + dot(a.last_date));
+
+  // direct labels at day 5, pushed apart vertically
+  const ends = ['kronos', 'timestral', 'naive'].map(mdl => ({mdl, v: f[mdl][4], y: sy(f[mdl][4])})).sort((p, q) => p.y - q.y);
+  for (let j = 1; j < ends.length; j++) if (ends[j].y - ends[j - 1].y < 38) ends[j].y = ends[j - 1].y + 38;
+  const over = ends[ends.length - 1].y - (m.t + ih - 10);
+  if (over > 0) ends.forEach(e => e.y -= over);
+  for (const e of ends) {
+    const x = sx(N - 1) + 8;
+    el('line', {x1: sx(N - 1) + 2, y1: sy(e.v), x2: x - 2, y2: e.y, stroke: COL[e.mdl]}, svg);
+    el('text', {x, y: e.y - 3, fill: COL[e.mdl], 'font-size': 13, 'font-weight': 700, 'letter-spacing': '.04em'}, svg, NAMES[e.mdl].toUpperCase());
+    el('text', {x, y: e.y + 13, fill: '#ece9e2', 'font-size': 14, 'font-weight': 700}, svg,
+      priceFmt(e.v) + '  ' + (e.v >= last ? '+' : '') + ((e.v - last) / last * 100).toFixed(1) + '%');
+  }
+  el('text', {x: sx(N - 1) + 8, y: m.t + ih + 4, fill: '#b9b5ab', 'font-size': 13, 'letter-spacing': '.04em'}, svg, 'BAND: TIMESTRAL');
+  el('text', {x: sx(N - 1) + 8, y: m.t + ih + 20, fill: '#b9b5ab', 'font-size': 13, 'letter-spacing': '.04em'}, svg, '10–90% RANGE');
+}
+function niceStep(r) {
+  const p = 10 ** Math.floor(Math.log10(r)), n = r / p;
+  return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p;
+}
+
+async function main() {
+  D = await (await fetch('data.json')).json();
+  P = D.leaderboard.live.kronos.n > 0 ? 'live' : 'warmup';
+  await document.fonts.ready;
+  countdown(); setInterval(countdown, 1000);
+  markets(); cards(); ruler(); list(); plot(); focus();
+  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { ruler(); plot(); focus(); }, 100); });
+}
+main();
+</script>
 </body>
 </html>
