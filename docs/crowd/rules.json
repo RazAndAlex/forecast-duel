@@ -1,1 +1,29 @@
-{"rules":[{"id":"placeholder","wallet":"0x0000000000000000000000000000000000000000","text":"Placeholder: buy Up after an up day, Down after a down day.","if":[{"feature":"prior_day_return","op":">","value":0}],"then":"up","else":"down"}]}
+{
+  "method": "Each kept wallet's daily net Up buying was matched against six simple habits (always Up, always Down, follow the crowd, fade the crowd, follow yesterday's move, bet against yesterday's move). A wallet gets a rule only when one habit matches at least 75% of its active days. 3 of 8 wallets qualified; the other 5 trade with no habit that simple. Written 2026-10-21 by the main session.",
+  "rules": [
+    {
+      "id": "every-morning-up",
+      "wallet": "0x61234f998ff1a26aafe36125a4c204d30d9c8b33",
+      "text": "Buys about 20 Up shares before the open every single market day, whatever NVDA did the day before (39 of 39 days).",
+      "if": [{"feature": "prior_day_return", "op": ">=", "value": -1}],
+      "then": "up",
+      "else": null
+    },
+    {
+      "id": "bet-against-yesterday",
+      "wallet": "0x38d812aff0b79f3bf5da2a477f780bcc163eea7c",
+      "text": "Sells Up after a day NVDA rose and buys Up after a day it fell (12 of 15 active days).",
+      "if": [{"feature": "prior_day_return", "op": "<", "value": 0}],
+      "then": "up",
+      "else": "down"
+    },
+    {
+      "id": "follow-the-crowd",
+      "wallet": "0x6b1f4538a11740201b8033d3eca751fa1a32bcaa",
+      "text": "Buys Up when the morning price is above 50 cents and sells it when below (10 of 10 days before the open; a second wallet, 0x9d83, does the same 8 of 9).",
+      "if": [{"feature": "up_price", "op": ">", "value": 0.5}],
+      "then": "up",
+      "else": "down"
+    }
+  ]
+}
