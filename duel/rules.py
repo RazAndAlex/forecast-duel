@@ -28,6 +28,7 @@ def replay(rule: dict, closes: dict[str, float], crowd_rows: list[dict]) -> dict
     first = min(up_price) if up_price else None
     dates = sorted(closes)
     tally = {"in_sample": [0, 0], "out_of_sample": [0, 0]}
+    days = []
     for i in range(2, len(dates)):
         d = dates[i]
         move = closes[d] - closes[dates[i - 1]]
@@ -49,12 +50,14 @@ def replay(rule: dict, closes: dict[str, float], crowd_rows: list[dict]) -> dict
         if pick is None:
             continue
         tally[side][0] += 1
-        tally[side][1] += (pick == "up") == (move > 0)
+        hit = (pick == "up") == (move > 0)
+        tally[side][1] += hit
+        days.append({"date": d, "call": pick, "actual": "up" if move > 0 else "down", "hit": hit})
     n = sum(t[0] for t in tally.values())
     hits = sum(t[1] for t in tally.values())
     return {"id": rule["id"], "wallet": rule["wallet"], "text": rule["text"], **_split(n, hits),
             "p": luck_p(n, hits), "in_sample": _split(*tally["in_sample"]),
-            "out_of_sample": _split(*tally["out_of_sample"])}
+            "out_of_sample": _split(*tally["out_of_sample"]), "days": sorted(days, key=lambda x: x["date"])[-60:]}
 
 
 def score_all(closes: dict[str, float], crowd_rows: list[dict], path=RULES) -> list[dict]:

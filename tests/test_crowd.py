@@ -72,6 +72,8 @@ def test_old_keys_unchanged(tmp_path):
     except Exception:
         pytest.skip("no main branch to compare with")
     new = report.build(out_path=tmp_path / "data.json")
+    for r in new["traders"]["rules"]:
+        r.pop("days")  # added on branch history-page
     for k, v in old.items():
         if k != "generated_at":
             assert new[k] == v, k
