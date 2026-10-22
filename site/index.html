@@ -231,6 +231,7 @@ function render(d) {
     `<span>Live: <b>n = ${liveN}</b>, no live forecast scored yet</span>` +
     `<span>Board below: warm-up, <b>n = ${W.naive.n}</b> replayed forecasts per model</span>` +
     (d.crowd ? `<span><a href="#direction" style="color:inherit">NVDA Up or Down: the crowd, three traders and a coin ↓</a></span>` : '') +
+    `<span><a href="history.html" style="color:inherit">History: who was right, day by day →</a></span>` +
     `<span class="right">Updated ${upd} UTC</span>`;
 
   document.getElementById('perasset').textContent = d.assets[0].scores.warmup.naive.n;
