@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forecast Duel · History</title>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,700&display=swap">
+<style>
+:root {
+  --ground: #1E1C19;
+  --open: #24211D;
+  --ink: #F3EFE4;
+  --ink-2: #C4BCB0;
+  --rule: #3D3832;
+  --rule-strong: #6B6359;
+  --kronos: #FF9C72;
+  --timestral: #E3C06A;
+  --naive: #F3EFE4;
+  --yes: #9BC08A;
+  --no: #E08A7A;
+  --sel: #2E2A25;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--ground); }
+body {
+  background: var(--ground); color: var(--ink);
+  font-family: 'Switzer', system-ui, sans-serif; font-weight: 400; font-size: 15px; line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  padding: 0 48px 64px;
+}
+.k { color: var(--kronos); } .t { color: var(--timestral); } .n { color: var(--naive); }
+.sub { color: var(--ink-2); }
+a { color: var(--ink); }
+
+/* status line, as on the main page */
+.status { display: flex; gap: 32px; align-items: baseline; padding: 14px 0 12px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.status b { font-weight: 700; }
+.status a { text-decoration: none; color: var(--ink-2); }
+.status .right { margin-left: auto; color: var(--ink-2); }
+.lead { font-size: 26px; font-weight: 500; letter-spacing: -0.015em; padding: 18px 0 4px; }
+.note { font-size: 14px; color: var(--ink-2); margin-bottom: 4px; max-width: 1000px; }
+
+/* window control */
+.win { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0 8px; font-size: 14px; color: var(--ink-2); }
+.seg { display: inline-flex; border: 1px solid var(--rule-strong); }
+.seg button { font: inherit; font-size: 14px; color: var(--ink-2); background: none; border: 0; padding: 6px 14px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule-strong); }
+.seg button[aria-pressed=true] { background: var(--open); color: var(--ink); font-weight: 700; }
+.key { font-size: 14px; color: var(--ink-2); margin-bottom: 10px; }
+.key b { font-weight: 700; color: var(--ink); margin-right: 3px; }
+.key b.k { color: var(--kronos); } .key b.t { color: var(--timestral); }
+
+/* calendar beside the day panel */
+.wrap { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 32px; align-items: start; }
+.cal { display: grid; grid-template-columns: repeat(5, 176px); border-left: 1px solid var(--rule); border-top: 1px solid var(--rule); }
+.cal .wd { font-size: 13px; color: var(--ink-2); padding: 4px 10px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule-strong); }
+.cell { font: inherit; color: inherit; text-align: left; background: none; border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 8px 10px 9px; min-height: 132px; display: flex; flex-direction: column; gap: 4px; }
+button.cell { cursor: pointer; }
+button.cell:focus { outline: none; }
+button.cell:focus-visible { box-shadow: inset 0 0 0 2px var(--ink-2); }
+button.cell.sel:focus-visible { box-shadow: none; }
+.cell .dn { font-size: 14px; color: var(--ink-2); }
+.cell .dn b { font-size: 15px; font-weight: 500; color: var(--ink); margin-right: 4px; }
+.cell .mv { font-size: 22px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+.cell .sc { font-size: 13px; color: var(--ink-2); margin-top: auto; }
+.cell .sc b { font-weight: 700; color: var(--ink); font-size: 15px; }
+.cell.sel { background: var(--sel); }
+.cell.sel .dn b { font-weight: 700; }
+.cell.off .dn { color: var(--ink-2); }
+.cell.off .dn b { color: var(--ink-2); font-weight: 400; }
+.cell .nm { font-size: 13px; color: var(--ink-2); }
+
+/* six marks in fixed order: filled + ✓ = right, hollow + ✗ = wrong, — = no call */
+.marks { display: grid; grid-template-columns: repeat(6, 24px); gap: 3px; margin-top: 2px; }
+.marks span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.mk { display: flex; align-items: center; justify-content: center; width: 24px; height: 22px; font-size: 13px; font-weight: 700; font-style: normal; }
+.mk.hit { background: var(--rule); color: var(--yes); }
+.mk.miss { border: 1px solid var(--rule-strong); color: var(--no); }
+.mk.none { color: var(--ink-2); font-weight: 400; }
+.marks small { font-size: 13px; color: var(--ink-2); line-height: 1; }
+.marks small.k { color: var(--kronos); } .marks small.t { color: var(--timestral); }
+
+/* window tally under the calendar */
+.tally { margin-top: 16px; display: grid; grid-template-columns: repeat(2, max-content); gap: 4px 40px; font-size: 15px; }
+.tally h3 { grid-column: 1 / -1; font-size: 14px; font-weight: 400; color: var(--ink-2); margin-bottom: 2px; }
+.tally b { font-weight: 700; }
+.tally .g { color: var(--ink-2); }
+
+/* day panel */
+.day h2 { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+.day h2 .px { font-weight: 700; }
+.day .from { font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+.calls { border-collapse: collapse; margin: 12px 0 10px; font-size: 15px; }
+.calls td { padding: 4px 18px 4px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.calls td:last-child { padding-right: 0; }
+.calls .g { color: var(--ink-2); }
+.calls .dir { font-weight: 700; }
+.calls .mk { display: inline-flex; vertical-align: -5px; margin-right: 6px; }
+.best { font-size: 15px; margin: 10px 0 8px; }
+.best b { font-weight: 700; }
+.box { overflow-x: auto; max-width: 100%; }
+.miss { border-collapse: collapse; }
+.miss th { text-align: right; font-weight: 400; font-size: 14px; color: var(--ink-2); padding: 6px 0 6px 12px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; vertical-align: bottom; }
+.miss th:first-child, .miss td:first-child { text-align: left; padding-left: 0; }
+.miss td { text-align: right; padding: 4px 0 4px 12px; border-bottom: 1px solid var(--rule); font-size: 15px; white-space: nowrap; }
+.miss td .f { display: block; color: var(--ink-2); font-size: 13px; line-height: 1.2; }
+.miss td.lo { font-weight: 700; }
+.miss td .sub { display: block; font-size: 13px; line-height: 1.2; }
+.none { color: var(--ink-2); }
+
+@media (max-width: 1400px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .day { border-top: 1px solid var(--rule-strong); padding-top: 14px; }
+}
+@media (max-width: 760px) {
+  body { padding: 0 16px 48px; }
+  .status { flex-wrap: wrap; gap: 6px 20px; } .status .right { margin-left: 0; }
+  .lead { font-size: 21px; }
+  .cal { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .cal .wd { padding: 4px 4px; }
+  .cell { padding: 6px 4px 7px; min-height: 0; }
+  .cell .dn span { display: none; }
+  .cell .mv { font-size: 15px; }
+  .cell .mv i { display: none; }
+  .marks { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px 2px; }
+  .mk { width: 100%; max-width: 22px; }
+  .cell .sc .w { display: none; }
+  .tally { grid-template-columns: max-content; }
+  .calls td { white-space: normal; padding-right: 10px; }
+  .day h2 { font-size: 20px; }
+}
+.step { display: flex; gap: 12px; margin: 0 0 10px; }
+.step button { font: inherit; font-size: 14px; color: var(--ink); background: var(--open); border: 1px solid var(--rule-strong); padding: 6px 14px; cursor: pointer; }
+.step button:disabled { color: var(--ink-2); border-color: var(--rule); cursor: default; }
+</style>
+</head>
+<body>
+<div class="status" id="status"><a href="./">← Standings</a><span>Loading data.json…</span></div>
+<p class="lead">Who called NVDA right, day by day</p>
+<p class="note">Each call is about one day's close, made before that day. The main page scores the models on their 5th day; this page shows their first. Click a day to see it beside the calendar.</p>
+
+<div class="win"><span>Window</span><div class="seg" id="win"><button data-n="5" aria-pressed="false">1 week</button><button data-n="10" aria-pressed="true">2 weeks</button><button data-n="21" aria-pressed="false">1 month</button></div><span id="range"></span></div>
+<p class="key"><b>C</b>Crowd · <b>EU</b>Every morning Up · <b>BY</b>Bet against yesterday · <b>FC</b>Follow the crowd · <b class="k">K</b>Kronos · <b class="t">T</b>Timestral &nbsp;— each mark: filled ✓ right, hollow ✗ wrong, — no call</p>
+
+<div class="wrap">
+  <div><div class="cal" id="cal"></div><div class="tally" id="tally"></div></div>
+  <section class="day" id="day"></section>
+</div>
+
+<script>
+const RULES = { 'every-morning-up': ['Every morning Up', 'EU'], 'bet-against-yesterday': ['Bet against yesterday', 'BY'], 'follow-the-crowd': ['Follow the crowd', 'FC'] };
+const SYM = { USD: '$', EUR: '€' };
+const money = (a, v) => (SYM[a.currency] || (a.currency ? a.currency + ' ' : '')) + (v >= 10000 ? Math.round(v).toLocaleString('en-US') : v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v < 10 ? v.toFixed(3) : v.toFixed(2));
+const CITY = { XNYS: 'New York', XETR: 'Frankfurt', XMIL: 'Milan' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dt = (d, o) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-GB', Object.assign({ timeZone: 'UTC' }, o));
+const ARROW = { up: '↑', down: '↓' }, WORD = { up: 'Up', down: 'Down' };
+const iso = t => new Date(t).toISOString().slice(0, 10);
+const DAY = 864e5;
+
+let D, NV, ROWS, DAYS, nWin = 10, sel = null;
+
+// One model's first-step forecast for asset a about day D, or null when there is none or D has not closed.
+function first(a, D, m) {
+  const p = a.past.find(p => p.dates[0] === D);
+  if (!p) return null;
+  const h = a.history.find(r => r[0] === D);
+  const actual = h ? h[1] : p.actual && p.actual[0];
+  if (actual == null) return null;
+  const prior = p.naive[0], f = p[m];
+  const fc = f == null ? null : f[0];
+  const call = fc == null || fc === prior ? null : fc > prior ? 'up' : 'down';
+  const move = actual > prior ? 'up' : actual < prior ? 'down' : null;
+  return { actual, prior, fc, call, hit: call && move ? call === move : null, miss: fc == null ? null : Math.abs(fc - actual) / actual * 100 };
+}
+
+function build(d) {
+  D = d;
+  NV = d.assets.find(a => a.ticker === 'NVDA');
+  DAYS = NV.history.slice(1).map((r, i) => ({ date: r[0], close: r[1], prev: NV.history[i][1] }))
+    .map(x => Object.assign(x, { pct: (x.close - x.prev) / x.prev * 100, move: x.close > x.prev ? 'up' : x.close < x.prev ? 'down' : null }));
+  const byDate = arr => Object.fromEntries((arr || []).map(x => [x.date, x]));
+  const crowd = byDate(d.crowd.days);
+  ROWS = [{ name: 'Crowd', ini: 'C', crowd: true, get: D => crowd[D] }];
+  (d.traders.rules || []).forEach(r => { const m = byDate(r.days), n = RULES[r.id] || [r.id, r.id.slice(0, 2).toUpperCase()]; ROWS.push({ name: n[0], ini: n[1], get: D => m[D] }); });
+  ['kronos', 'timestral'].forEach(m => ROWS.push({ name: m === 'kronos' ? 'Kronos' : 'Timestral', ini: m[0].toUpperCase(), cls: m[0], model: m, get: D => first(NV, D, m) }));
+
+  document.getElementById('status').innerHTML =
+    `<a href="./">← Standings</a><span><b>Forecast Duel · History</b> · NVDA, Up or Down for one day · ${d.assets.length} stocks for the miss table</span>` +
+    `<span class="right">Updated ${d.generated_at.slice(0, 16).replace('T', ' ')} UTC</span>`;
+  document.getElementById('win').onclick = e => { const b = e.target.closest('button'); if (b) { nWin = +b.dataset.n; draw(); } };
+  // preventScroll: a click selects in place and never moves the page
+  document.getElementById('cal').onclick = e => { const c = e.target.closest('button[data-d]'); if (c) { sel = c.dataset.d; draw(); const n = document.querySelector(`#cal [data-d="${sel}"]`); n && n.focus({ preventScroll: true }); } };
+  const go = k => { const wd = DAYS.slice(-nWin), i = wd.findIndex(y => y.date === sel) + k; if (i >= 0 && i < wd.length) { sel = wd[i].date; draw(); } };
+  document.getElementById('day').onclick = e => { const b = e.target.closest('button[data-s]'); if (b && !b.disabled) go(+b.dataset.s); };
+  document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); });
+  draw();
+}
+
+const called = x => x && x.call && x.hit != null;
+function mark(x) {
+  if (!called(x)) return '<i class="mk none" aria-label="no call">—</i>';
+  return x.hit ? `<i class="mk hit" aria-label="right">✓</i>` : `<i class="mk miss" aria-label="wrong">✗</i>`;
+}
+
+function draw() {
+  document.querySelectorAll('#win button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.n === nWin));
+  const days = DAYS.slice(-nWin), inWin = Object.fromEntries(days.map(x => [x.date, x]));
+  const all = Object.fromEntries(DAYS.map(x => [x.date, x])), last = DAYS[DAYS.length - 1].date;
+  if (!inWin[sel]) sel = days[days.length - 1].date;
+  document.getElementById('range').textContent = `${days.length} NVDA trading days, ${dt(days[0].date, { day: 'numeric', month: 'short' })} to ${dt(days[days.length - 1].date, { day: 'numeric', month: 'short' })}`;
+
+  // Monday of the first week to Friday of the last week, weekends dropped
+  const t0 = new Date(days[0].date + 'T00:00:00Z'), t1 = new Date(days[days.length - 1].date + 'T00:00:00Z');
+  const start = t0.getTime() - ((t0.getUTCDay() + 6) % 7) * DAY, end = t1.getTime() + (5 - t1.getUTCDay()) * DAY;
+  let html = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(w => `<div class="wd">${w}</div>`).join('');
+  for (let t = start; t <= end; t += DAY) {
+    const wd = new Date(t).getUTCDay(); if (wd === 0 || wd === 6) continue;
+    const date = iso(t), x = inWin[date], num = +date.slice(8);
+    const dn = `<span class="dn"><b>${num}</b>${num === 1 || t === start ? dt(date, { month: 'short' }) : ''}<span> ${dt(date, { weekday: 'short' })}</span></span>`;
+    if (!x) {
+      // a weekday inside the data range with no NVDA close is a market holiday
+      const closed = !all[date] && date > DAYS[0].date && date < last;
+      html += `<div class="cell off">${dn}${closed ? '<span class="nm">no market</span>' : ''}</div>`;
+      continue;
+    }
+    const cs = ROWS.map(r => r.get(date)), n = cs.filter(called).length, h = cs.filter(c => called(c) && c.hit).length;
+    html += `<button class="cell${date === sel ? ' sel' : ''}" data-d="${date}" aria-pressed="${date === sel}" aria-label="${dt(date, { weekday: 'long', day: 'numeric', month: 'long' })}, ${h} of ${n} right">${dn}` +
+      `<span class="mv">${x.move ? ARROW[x.move] : '='} ${Math.abs(x.pct).toFixed(1)}<i>%</i></span>` +
+      `<span class="marks">${ROWS.map((r, i) => `<span>${mark(cs[i])}<small class="${r.cls || ''}">${r.ini}</small></span>`).join('')}</span>` +
+      `<span class="sc"><b>${h}</b> of ${n}<span class="w"> right</span></span></button>`;
+  }
+  document.getElementById('cal').innerHTML = html;
+
+  document.getElementById('tally').innerHTML = `<h3>Right in this window (days with a call)</h3>` + ROWS.map(r => {
+    const xs = days.map(x => r.get(x.date)).filter(called);
+    return `<div><span class="${r.cls || 'g'}">${r.name}</span> <b>${xs.filter(x => x.hit).length}</b> of ${xs.length} days</div>`;
+  }).join('');
+  dayPanel(inWin[sel]);
+}
+
+function dayPanel(x) {
+  const calls = ROWS.map(r => {
+    const c = r.get(x.date);
+    const what = !c || !c.call ? '<td class="g">no call</td>'
+      : `<td><span class="dir">${ARROW[c.call]} ${WORD[c.call]}</span>${r.crowd ? ` <span class="g">Up priced ${Math.round(c.up_price * 100)}¢</span>` : r.model ? ` <span class="g">to ${money(NV, c.fc)}</span>` : ''}</td>`;
+    const res = called(c) ? `<td>${mark(c)}${c.hit ? 'right' : 'wrong'}</td>` : '<td></td>';
+    return `<tr><td class="${r.cls || 'g'}">${r.name}</td>${what}${res}</tr>`;
+  }).join('');
+
+  const M = ['kronos', 'timestral', 'naive'], lowest = { kronos: 0, timestral: 0, naive: 0 };
+  let n = 0;
+  const rows = D.assets.map(a => {
+    const r = Object.fromEntries(M.map(m => [m, first(a, x.date, m)]));
+    if (!r.naive) return `<tr><td>${esc(a.name)}<span class="sub">${CITY[a.exchange] || a.exchange}</span></td><td class="none">—</td><td class="none">—</td><td class="none">—</td><td class="none">—</td></tr>`;
+    n++;
+    const lo = Math.min(...M.map(m => r[m].miss));
+    M.forEach(m => { if (r[m].miss === lo) lowest[m]++; });
+    const cell = (m, f) => `<td class="${r[m].miss === lo ? 'lo' : ''}">${f ? `<span class="f">${money(a, r[m].fc)}</span>` : ''}${r[m].miss.toFixed(2)}%</td>`;
+    return `<tr><td>${esc(a.name)}<span class="sub">${CITY[a.exchange] || a.exchange}</span></td><td>${money(a, r.naive.actual)}</td>${cell('kronos', 1)}${cell('timestral', 1)}${cell('naive', 0)}</tr>`;
+  }).join('');
+  const NM = { kronos: '<span class="k">Kronos</span>', timestral: '<span class="t">Timestral</span>', naive: '<span class="n">Naive</span>' };
+  const top = Math.max(...M.map(m => lowest[m]));
+  const best = n ? `Least miss today: <b>${M.filter(m => lowest[m] === top).map(m => NM[m]).join(' and ')}</b> on <b>${top}</b> of ${n}` +
+    ` <span class="sub">(${M.filter(m => lowest[m] !== top).map(m => `${NM[m]} ${lowest[m]}`).join(', ')})</span>` : 'No model forecast for this day.';
+
+  const ix = DAYS.slice(-nWin).findIndex(y => y.date === x.date), wd = DAYS.slice(-nWin);
+  const step = `<p class="step"><button data-s="-1"${ix > 0 ? '' : ' disabled'}>← Day before</button><button data-s="1"${ix < wd.length - 1 ? '' : ' disabled'}>Day after →</button></p>`;
+  document.getElementById('day').innerHTML = step +
+    `<h2>${dt(x.date, { weekday: 'long', day: 'numeric', month: 'long' })}: NVDA closed <span class="px">${money(NV, x.close)}</span>, ${x.move ? ARROW[x.move] : '='} ${Math.abs(x.pct).toFixed(2)}%</h2>` +
+    `<p class="from">from ${money(NV, x.prev)} the day before</p>` +
+    `<table class="calls"><tbody>${calls}</tbody></table>` +
+    `<p class="best">${best}</p>` +
+    `<div class="box"><table class="miss"><thead><tr><th>Stock</th><th>Actual close</th><th class="k">Kronos<br>forecast, miss</th><th class="t">Timestral<br>forecast, miss</th><th class="n">Naive<br>miss</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+fetch('data.json').then(r => r.json()).then(build).catch(e => {
+  document.getElementById('status').innerHTML = `<a href="./">← Standings</a><span>Could not load data.json: ${esc(e.message)}</span>`;
+});
+</script>
+</body></html>
