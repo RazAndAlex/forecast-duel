@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-24T04:55:08+00:00",
+ "generated_at": "2026-10-25T05:05:07+00:00",
  "models": [
   "kronos",
   "timestral",
@@ -10696,7 +10696,7 @@
    "kind": "stock",
    "exchange": "XETR",
    "currency": "EUR",
-   "last_close": 256.55,
+   "last_close": 256.8,
    "last_date": "2026-10-23",
    "history": [
     [
@@ -11057,7 +11057,7 @@
     ],
     [
      "2026-10-23",
-     256.55
+     256.8
     ]
    ],
    "latest": {
@@ -11253,7 +11253,7 @@
       260.25,
       266.75,
       255.7,
-      256.55
+      256.8
      ],
      "kronos": [
       269.68,
@@ -12024,7 +12024,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 39.24,
+   "last_close": 39.45,
    "last_date": "2026-10-23",
    "history": [
     [
@@ -12385,7 +12385,7 @@
     ],
     [
      "2026-10-23",
-     39.24
+     39.45
     ]
    ],
    "latest": {
@@ -12581,7 +12581,7 @@
       40.99,
       42.03,
       39.94,
-      39.24
+      39.45
      ],
      "kronos": [
       40.55,
@@ -13329,12 +13329,12 @@
     "warmup": {
      "kronos": {
       "n": 19,
-      "mape_pct": 6.06,
+      "mape_pct": 6.05,
       "direction_hit_pct": 57.89
      },
      "timestral": {
       "n": 19,
-      "mape_pct": 5.49,
+      "mape_pct": 5.48,
       "direction_hit_pct": 47.37
      },
      "naive": {
@@ -13352,7 +13352,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 3.546,
+   "last_close": 3.555,
    "last_date": "2026-10-23",
    "history": [
     [
@@ -13713,7 +13713,7 @@
     ],
     [
      "2026-10-23",
-     3.546
+     3.555
     ]
    ],
    "latest": {
@@ -13909,7 +13909,7 @@
       3.832,
       3.815,
       3.793,
-      3.546
+      3.555
      ],
      "kronos": [
       3.908,
@@ -14662,12 +14662,12 @@
      },
      "timestral": {
       "n": 19,
-      "mape_pct": 2.84,
+      "mape_pct": 2.83,
       "direction_hit_pct": 78.95
      },
      "naive": {
       "n": 19,
-      "mape_pct": 2.91,
+      "mape_pct": 2.9,
       "direction_hit_pct": 21.05
      }
     }
@@ -14680,7 +14680,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 349.3,
+   "last_close": 349.5,
    "last_date": "2026-10-23",
    "history": [
     [
@@ -15041,7 +15041,7 @@
     ],
     [
      "2026-10-23",
-     349.3
+     349.5
     ]
    ],
    "latest": {
@@ -15237,7 +15237,7 @@
       356.35,
       353.5,
       354.05,
-      349.3
+      349.5
      ],
      "kronos": [
       356.18,
@@ -16509,19 +16509,19 @@
     "id": "every-morning-up",
     "wallet": "0x61234f998ff1a26aafe36125a4c204d30d9c8b33",
     "text": "Buys about 20 Up shares before the open every single market day, whatever NVDA did the day before (39 of 39 days).",
-    "n": 631,
+    "n": 630,
     "hits": 333,
-    "direction_hit_pct": 52.77,
-    "p": 0.08792129349031937,
+    "direction_hit_pct": 52.86,
+    "p": 0.08156712738287171,
     "in_sample": {
      "n": 61,
      "hits": 30,
      "direction_hit_pct": 49.18
     },
     "out_of_sample": {
-     "n": 570,
+     "n": 569,
      "hits": 303,
-     "direction_hit_pct": 53.16
+     "direction_hit_pct": 53.25
     },
     "days": [
      {
@@ -16890,19 +16890,19 @@
     "id": "bet-against-yesterday",
     "wallet": "0x38d812aff0b79f3bf5da2a477f780bcc163eea7c",
     "text": "Sells Up after a day NVDA rose and buys Up after a day it fell (12 of 15 active days).",
-    "n": 631,
-    "hits": 331,
-    "direction_hit_pct": 52.46,
-    "p": 0.11617091010482619,
+    "n": 630,
+    "hits": 330,
+    "direction_hit_pct": 52.38,
+    "p": 0.12395543654718558,
     "in_sample": {
      "n": 61,
      "hits": 26,
      "direction_hit_pct": 42.62
     },
     "out_of_sample": {
-     "n": 570,
-     "hits": 305,
-     "direction_hit_pct": 53.51
+     "n": 569,
+     "hits": 304,
+     "direction_hit_pct": 53.43
     },
     "days": [
      {
@@ -17694,14 +17694,14 @@
   },
   "rules": {
    "every-morning-up": {
-    "n": 631,
+    "n": 630,
     "hits": 333,
-    "p": 0.08792129349031937
+    "p": 0.08156712738287171
    },
    "bet-against-yesterday": {
-    "n": 631,
-    "hits": 331,
-    "p": 0.11617091010482619
+    "n": 630,
+    "hits": 330,
+    "p": 0.12395543654718558
    },
    "follow-the-crowd": {
     "n": 61,
