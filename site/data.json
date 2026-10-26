@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-25T05:05:07+00:00",
+ "generated_at": "2026-10-26T05:08:45+00:00",
  "models": [
   "kronos",
   "timestral",
@@ -16509,19 +16509,19 @@
     "id": "every-morning-up",
     "wallet": "0x61234f998ff1a26aafe36125a4c204d30d9c8b33",
     "text": "Buys about 20 Up shares before the open every single market day, whatever NVDA did the day before (39 of 39 days).",
-    "n": 630,
-    "hits": 333,
-    "direction_hit_pct": 52.86,
-    "p": 0.08156712738287171,
+    "n": 629,
+    "hits": 332,
+    "direction_hit_pct": 52.78,
+    "p": 0.08757837024007616,
     "in_sample": {
      "n": 61,
      "hits": 30,
      "direction_hit_pct": 49.18
     },
     "out_of_sample": {
-     "n": 569,
-     "hits": 303,
-     "direction_hit_pct": 53.25
+     "n": 568,
+     "hits": 302,
+     "direction_hit_pct": 53.17
     },
     "days": [
      {
@@ -16890,19 +16890,19 @@
     "id": "bet-against-yesterday",
     "wallet": "0x38d812aff0b79f3bf5da2a477f780bcc163eea7c",
     "text": "Sells Up after a day NVDA rose and buys Up after a day it fell (12 of 15 active days).",
-    "n": 630,
-    "hits": 330,
-    "direction_hit_pct": 52.38,
-    "p": 0.12395543654718558,
+    "n": 629,
+    "hits": 329,
+    "direction_hit_pct": 52.31,
+    "p": 0.13211065472489542,
     "in_sample": {
      "n": 61,
      "hits": 26,
      "direction_hit_pct": 42.62
     },
     "out_of_sample": {
-     "n": 569,
-     "hits": 304,
-     "direction_hit_pct": 53.43
+     "n": 568,
+     "hits": 303,
+     "direction_hit_pct": 53.35
     },
     "days": [
      {
@@ -17694,14 +17694,14 @@
   },
   "rules": {
    "every-morning-up": {
-    "n": 630,
-    "hits": 333,
-    "p": 0.08156712738287171
+    "n": 629,
+    "hits": 332,
+    "p": 0.08757837024007616
    },
    "bet-against-yesterday": {
-    "n": 630,
-    "hits": 330,
-    "p": 0.12395543654718558
+    "n": 629,
+    "hits": 329,
+    "p": 0.13211065472489542
    },
    "follow-the-crowd": {
     "n": 61,
