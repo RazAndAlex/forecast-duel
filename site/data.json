@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T06:07:47+00:00",
+ "generated_at": "2026-11-01T06:36:36+00:00",
  "models": [
   "kronos",
   "timestral",
@@ -38,7 +38,7 @@
    },
    "naive": {
     "n": 48,
-    "mape_pct": 3.48,
+    "mape_pct": 3.47,
     "direction_hit_pct": 31.25,
     "beats_naive_pct": null
    }
@@ -12256,7 +12256,7 @@
    "kind": "stock",
    "exchange": "XETR",
    "currency": "EUR",
-   "last_close": 265.7,
+   "last_close": 265.65,
    "last_date": "2026-10-30",
    "history": [
     [
@@ -12617,7 +12617,7 @@
     ],
     [
      "2026-10-30",
-     265.7
+     265.65
     ]
    ],
    "latest": {
@@ -12813,7 +12813,7 @@
       266.2,
       270.05,
       273.75,
-      265.7
+      265.65
      ],
      "kronos": [
       253.01,
@@ -13739,7 +13739,7 @@
     "live": {
      "kronos": {
       "n": 4,
-      "mape_pct": 2.47,
+      "mape_pct": 2.46,
       "direction_hit_pct": 75.0
      },
      "timestral": {
@@ -13779,7 +13779,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 41.85,
+   "last_close": 41.87,
    "last_date": "2026-10-30",
    "history": [
     [
@@ -14140,7 +14140,7 @@
     ],
     [
      "2026-10-30",
-     41.85
+     41.87
     ]
    ],
    "latest": {
@@ -14336,7 +14336,7 @@
       43.4,
       43.38,
       44.19,
-      41.85
+      41.87
      ],
      "kronos": [
       39.69,
@@ -15267,7 +15267,7 @@
      },
      "timestral": {
       "n": 4,
-      "mape_pct": 5.3,
+      "mape_pct": 5.31,
       "direction_hit_pct": 50.0
      },
      "naive": {
@@ -15302,7 +15302,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 4.154,
+   "last_close": 4.141,
    "last_date": "2026-10-30",
    "history": [
     [
@@ -15663,7 +15663,7 @@
     ],
     [
      "2026-10-30",
-     4.154
+     4.141
     ]
    ],
    "latest": {
@@ -15859,7 +15859,7 @@
       3.71,
       4.28,
       4.22,
-      4.154
+      4.141
      ],
      "kronos": [
       3.544,
@@ -16785,17 +16785,17 @@
     "live": {
      "kronos": {
       "n": 4,
-      "mape_pct": 6.43,
+      "mape_pct": 6.42,
       "direction_hit_pct": 50.0
      },
      "timestral": {
       "n": 4,
-      "mape_pct": 6.42,
+      "mape_pct": 6.4,
       "direction_hit_pct": 25.0
      },
      "naive": {
       "n": 4,
-      "mape_pct": 6.52,
+      "mape_pct": 6.51,
       "direction_hit_pct": 0.0
      }
     },
@@ -16825,7 +16825,7 @@
    "kind": "stock",
    "exchange": "XMIL",
    "currency": "EUR",
-   "last_close": 355.8,
+   "last_close": 355.1,
    "last_date": "2026-10-30",
    "history": [
     [
@@ -17186,7 +17186,7 @@
     ],
     [
      "2026-10-30",
-     355.8
+     355.1
     ]
    ],
    "latest": {
@@ -17382,7 +17382,7 @@
       349.4,
       352.15,
       357.2,
-      355.8
+      355.1
      ],
      "kronos": [
       351.63,
@@ -18308,17 +18308,17 @@
     "live": {
      "kronos": {
       "n": 4,
-      "mape_pct": 1.09,
+      "mape_pct": 1.08,
       "direction_hit_pct": 50.0
      },
      "timestral": {
       "n": 4,
-      "mape_pct": 0.91,
+      "mape_pct": 0.9,
       "direction_hit_pct": 50.0
      },
      "naive": {
       "n": 4,
-      "mape_pct": 0.95,
+      "mape_pct": 0.94,
       "direction_hit_pct": 50.0
      }
     },
@@ -18884,19 +18884,19 @@
     "id": "every-morning-up",
     "wallet": "0x61234f998ff1a26aafe36125a4c204d30d9c8b33",
     "text": "Buys about 20 Up shares before the open every single market day, whatever NVDA did the day before (39 of 39 days).",
-    "n": 631,
-    "hits": 332,
-    "direction_hit_pct": 52.61,
-    "p": 0.10133092163011691,
+    "n": 630,
+    "hits": 331,
+    "direction_hit_pct": 52.54,
+    "p": 0.1083863836624668,
     "in_sample": {
      "n": 66,
      "hits": 32,
      "direction_hit_pct": 48.48
     },
     "out_of_sample": {
-     "n": 565,
-     "hits": 300,
-     "direction_hit_pct": 53.1
+     "n": 564,
+     "hits": 299,
+     "direction_hit_pct": 53.01
     },
     "days": [
      {
@@ -19265,19 +19265,19 @@
     "id": "bet-against-yesterday",
     "wallet": "0x38d812aff0b79f3bf5da2a477f780bcc163eea7c",
     "text": "Sells Up after a day NVDA rose and buys Up after a day it fell (12 of 15 active days).",
-    "n": 631,
+    "n": 630,
     "hits": 329,
-    "direction_hit_pct": 52.14,
-    "p": 0.15032204945271055,
+    "direction_hit_pct": 52.22,
+    "p": 0.14102449784936893,
     "in_sample": {
      "n": 66,
      "hits": 28,
      "direction_hit_pct": 42.42
     },
     "out_of_sample": {
-     "n": 565,
+     "n": 564,
      "hits": 301,
-     "direction_hit_pct": 53.27
+     "direction_hit_pct": 53.37
     },
     "days": [
      {
@@ -20069,14 +20069,14 @@
   },
   "rules": {
    "every-morning-up": {
-    "n": 631,
-    "hits": 332,
-    "p": 0.10133092163011691
+    "n": 630,
+    "hits": 331,
+    "p": 0.1083863836624668
    },
    "bet-against-yesterday": {
-    "n": 631,
+    "n": 630,
     "hits": 329,
-    "p": 0.15032204945271055
+    "p": 0.14102449784936893
    },
    "follow-the-crowd": {
     "n": 66,
